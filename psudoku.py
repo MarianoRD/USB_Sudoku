@@ -1,50 +1,25 @@
-"""Proyecto Sudoku
 
-Descripción: Juego de un Sudoku con una GUI, que permite al usuario utilizar el
-programa (juego) donde posee un primer paso para introducir su nombre, luego un
-menú en el cual se le presentan varias opciones, el juego del Sudoku como tal con
-varios niveles de dificultad, una tabla con las mejores puntuaciones
-
-	1- Introducir Nombre
-	2- Opciones en el menú:
-		2.1- Partida nueva
-		2.2- Cargar partida ya existente
-		2.3- Mostrar la tabla de records
-		2.4- Mostrar la ayuda
-		2.5- Salir del juego
-	3- Dificultada del juego:
-		3.1- Entrenamiento
-		3.2- Fácil
-		3.3- Difícil
-		3.4- Muy Difícil
-	4- Elegir partida (seleccionar tablero):
-		4.1- Cargar tablero
-		4.2- Elegir archivo solución
-	5- Tablero con tiempo, puntaje y opción de salir y guardar
-	6- Records muestra el puntaje de los jugadores por cada nivel
-	7- Ayuda presenta las reglas del juego y el como jugarlo
-
-	Al iniciar la partida, debe se debe visualizar el tiempo y el puntaje
-
-	Nivel Entrenamiento:
-		Tablero 6x6 o 9x9
-		Solo el tiempo sin puntaje
-
-Autores:
-	Mariano Rodríguez 12-10892
-	Pablo Gonzalez 13-10575
-
-Última modificación:
-		19/03/2016
-
-Variables:
-"""
 
 # Librerias
 import pygame, sys
 from pygame.locals import *	
 
+# Colores
+blanco = (255, 255, 255)
+negro = (0, 0, 0)
+
 # Funciones
+
+# Dibuja las lineas que separan los numeros, las regiones del tablero y el fondo
+# de la pantalla
+def dibuja_tablero (color1, color2):
+	# Crea el fondo blanco del tablero
+	DISPLAYSURF = pygame.display.fill(color1)
+
+	# Crea las lineas divisorias de los numeros
+	for x in range(0, 800, 30):
+		pygame.draw.line(DISPLAYSURF, color2, (x,0), (x,600))
+	# Crea las lineas divisorias de las regiones y delimitadoras del tablero
 
 
 
