@@ -22,6 +22,43 @@ pos_titulo = ((margen_x+(3*celda)),(margen_y-60))
 
 ########################## Inicio de Funciones #################################
 
+# Menu
+def Menu(fondo,negro,pos_titulo):
+	print("lol") # Quitar
+	OpcionBack = (205,197,191)
+	OpcionFont = pygame.font.SysFont("monospace", 17) # Fuente para las opciones
+
+	# Crea opcion1 (Crear Nueva Partida)
+	Nva_partida = OpcionFont.render('Nueva partida', True, negro,OpcionBack)
+	Fondo_Op = Nva_partida.get_rect()
+	pos_nvapartida = (pos_titulo[0]+30, pos_titulo[1]+120)
+	Fondo_Op.center = (pos_nvapartida)
+	fondo.blit(Nva_partida,pos_nvapartida)
+
+	# Creea opcion2 (Descargar Partida existente)
+	Des_partida = OpcionFont.render('Cargar partida', True, negro,OpcionBack)
+	pos_despartida = (pos_nvapartida[0]-4, pos_nvapartida[1]+60)
+	Fondo_Op.center = (pos_despartida)
+	fondo.blit(Des_partida,pos_despartida)
+
+	# Creea opcion3 (Records)
+	Records = OpcionFont.render('Tabla de Records', True, negro,OpcionBack)
+	pos_record = (pos_despartida[0]-10, pos_despartida[1]+60)
+	Fondo_Op.center = (pos_record)
+	fondo.blit(Records,pos_record)
+
+	# Creea opcion4 (Reglas)
+	Reglas = OpcionFont.render('Como Jugar', True, negro,OpcionBack)
+	pos_regla = (pos_record[0]+30, pos_record[1]+60)
+	Fondo_Op.center = (pos_regla)
+	fondo.blit(Reglas,pos_regla)	
+
+	# Creea opcion5 (Salir)
+	Salir = OpcionFont.render('Salir', True, negro,OpcionBack)
+	pos_salir = (pos_regla[0]+25, pos_regla[1]+60)
+	Fondo_Op.center = (pos_salir)
+	fondo.blit(Salir,pos_salir)
+
 # Dibuja las lineas que delimitan el tablero
 def dibuja_tablero(fondo, color, tablero, celda, margenx, margeny):
 	#Variables de verificación
@@ -71,9 +108,9 @@ def coord_celdas(x, y, celda, margenx, margeny):
 
 # Inicializa PyGame
 pygame.init()
-
+print(pos_titulo)
 # Fuentes
-titulos = pygame.font.SysFont("monospace", 40, italic=True)
+titulos = pygame.font.SysFont("monospace", 60, italic=True)
 
 # Sonidos
 click = pygame.mixer.Sound('click.wav')
@@ -89,8 +126,9 @@ fondo.fill(blanco)
 # Crea el titulo 'Sudoku'
 sudoku = titulos.render("Sudoku", 2, negro)
 fondo.blit(sudoku, pos_titulo)
+# Crea menu
+Menu(fondo,negro,pos_titulo)
 #Dibuja el tablero
-dibuja_tablero(fondo, negro, tablero, celda, margen_x, margen_y)
 
 while True:
 	evento = pygame.event.poll()
@@ -98,5 +136,6 @@ while True:
 		pygame.quit()
 		sys.exit()
 	elif evento.type == MOUSEBUTTONUP:
+		dibuja_tablero(fondo, negro, tablero, celda, margen_x, margen_y)
 		click.play() # Reproduce el sonido click
 	pygame.display.update()
