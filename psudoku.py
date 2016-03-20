@@ -7,6 +7,7 @@ from pygame.locals import *
 blanco = (255,255,255)
 negro = (0,0,0)
 gris = (84,84,84)
+azul = (47, 86, 233)
 
 
 # Valores globales
@@ -18,15 +19,14 @@ celda = int(tablero[0] / 9) # Tamaño de cada celda en el tablero
 margen_x = 200
 margen_y = 100
 pos_titulo = ((margen_x+(3*celda)),(margen_y-60))
+pos_menu = (pos_titulo[0]+30, pos_titulo[1]+120)
 
 
 ########################## Inicio de Funciones #################################
 
 # Menu
-def Menu(fondo,negro,pos_titulo):
-	print("lol") # Quitar
+def Menu(fondo,negro,pos_titulo, OpcionFont):
 	OpcionBack = (205,197,191)
-	OpcionFont = pygame.font.SysFont("monospace", 17) # Fuente para las opciones
 
 	# Crea opcion1 (Crear Nueva Partida)
 	Nva_partida = OpcionFont.render('Nueva partida', True, negro,OpcionBack)
@@ -111,6 +111,7 @@ pygame.init()
 print(pos_titulo)
 # Fuentes
 titulos = pygame.font.SysFont("monospace", 60, italic=True)
+palabras_menu = pygame.font.SysFont("monospace", 17)
 
 # Sonidos
 click = pygame.mixer.Sound('click.wav')
@@ -127,7 +128,7 @@ fondo.fill(blanco)
 sudoku = titulos.render("Sudoku", 2, negro)
 fondo.blit(sudoku, pos_titulo)
 # Crea menu
-Menu(fondo,negro,pos_titulo)
+Menu(fondo,negro,pos_titulo, palabras_menu)
 #Dibuja el tablero
 
 while True:
@@ -136,6 +137,6 @@ while True:
 		pygame.quit()
 		sys.exit()
 	elif evento.type == MOUSEBUTTONUP:
-		dibuja_tablero(fondo, negro, tablero, celda, margen_x, margen_y)
 		click.play() # Reproduce el sonido click
+		dibuja_tablero(fondo, negro, tablero, celda, margen_x, margen_y)
 	pygame.display.update()
