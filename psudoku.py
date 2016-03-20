@@ -105,6 +105,21 @@ def coord_celdas(xmouse, ymouse, celda, margenx, margeny):
 				return (x, y)
 	return (None, None)
 
+# Carga los datos del tablero a un arreglo 2D
+def cargar_tablero(nombre):
+	with open(nombre+".txt", 'r') as archivo:
+		numeros_tablero = archivo.readlines()
+	archivo.closed
+
+# Guarda la partida
+def guardar_partida(numeros_tablero):
+	with open(nombre+".txt", 'w') as archivo:
+		for linea in numeros_tablero:
+			archivo.write(linea)
+	archivo.closed
+
+
+
 ############################# Fin de Funciones #################################
 
 # Inicializa PyGame
