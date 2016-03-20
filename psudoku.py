@@ -16,10 +16,11 @@ tamaño_tablero = 360
 assert(tamaño_tablero % 9 == 0), "El tablero tiene que ser multiplo de 9"
 tablero = (tamaño_tablero, tamaño_tablero)
 celda = int(tablero[0] / 9) # Tamaño de cada celda en el tablero
-margen_x = 200
-margen_y = 100
-pos_titulo = ((margen_x+(3*celda)),(margen_y-60))
-pos_menu = (pos_titulo[0]+30, pos_titulo[1]+120)
+margen_x = 200 # Margen que tiene el tablero horizontalmente
+margen_y = 100 # Margen que tiene el tablero verticalmente
+pos_titulo = ((margen_x+(3*celda)),(margen_y-60)) # Posicion del título
+pos_menu = (pos_titulo[0]+30, pos_titulo[1]+120) # Posición del Menu
+lineas = 9 # Numero de lineas tanto verticales como horizontales
 
 
 ########################## Inicio de Funciones #################################
@@ -85,30 +86,29 @@ def dibuja_tablero(fondo, color, tablero, celda, margenx, margeny):
 	assert(i_veri == 4), "Tienen que haber 9 regiones"
 	return None
 
-"""NO FUNCIONA"""
 # Pasa de las coordenadas de fondo a las celdas de tablero 
+#mousex, mousey = pygame.mouse.get_pos() necesario para que funcione
 def celdas_coord(x, y, celda, margenx, margeny):
-	izquierda = x * celda + margenx
-	arriba = y * celda + margeny
+	izquierda = (x * celda) + margenx
+	arriba = (y * celda) + margeny
 	return (izquierda, arriba)
 
-"""NO FUNCIONA"""
 # Pasas de las celdas de tablero a las coordenadas de fondo 
-def coord_celdas(x, y, celda, margenx, margeny):
-	for x in range(10):
-		for y in range(10):
+# mousex, mousey = pygame.mouse.get_pos() Necesario para que funcione
+def coord_celdas(xmouse, ymouse, celda, margenx, margeny):
+	for x in range(9):
+		for y in range(9):
 			izquierda, arriba = celdas_coord(x, y, celda, margenx, margeny)
 			caja = pygame.Rect(izquierda, arriba, celda, celda)
-	if caja.collidepoint(x, y):
-		return (x, y)
-	else:
-		return (None, None)
+			if caja.collidepoint(xmouse, ymouse):
+				print (x,y)
+				return (x, y)
+	return (None, None)
 
 ############################# Fin de Funciones #################################
 
 # Inicializa PyGame
 pygame.init()
-print(pos_titulo)
 # Fuentes
 titulos = pygame.font.SysFont("monospace", 60, italic=True)
 palabras_menu = pygame.font.SysFont("monospace", 17)
