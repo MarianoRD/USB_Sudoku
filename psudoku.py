@@ -66,6 +66,9 @@ tablero6.margen_x = 200
 tablero6.margen_y = 100
 tablero6.lineas = 6
 
+# Nombre del jugador
+nombre = ''
+
 # ________Inicio Botones del Menu__________________________
 # Nueva partida
 nueva_Partida = Boton()
@@ -123,25 +126,6 @@ nombre = ''
 # _________________________ Inicio de Funciones ______________________________#
 # Crea los botones del menu
 def dibuja_boton(opcion):
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-        caja = pygame.Rect(opcion.margen_x, opcion.margen_y, opcion.ancho, opcion.alto)
-        # Cambia el boton de color (FALTA POR IMPLEMENTAR)
-        """if caja.collidepoint(mouse[0], mouse[1]):
-            pygame.draw.rect(fondo,(azul), (opcion.margen_x,opcion.margen_y,opcion.ancho,opcion.alto))
-            fondo.blit(opcion.imagen,(opcion.margen_x - 15,opcion.margen_y - 22))
-            if click[0] == 1 and caja.collidepoint(mouse[0], mouse[1]):
-                if opcion.texto == "Nueva Partida":
-                    dibuja_tablero(tablero9, negro)
-                elif opcion.texto == "Cargar Partida":
-                    dibuja_tablero(tablero9, negro)
-                elif opcion.texto == "Records":
-                    dibuja_tablero(tablero9, negro)
-                elif opcion.texto == "Reglas":
-                    dibuja_tablero(tablero9, negro)
-                elif opcion.texto == "Salir":
-                    pygame.quit()
-                    quit()"""
         pygame.draw.rect(fondo, (blanco), (opcion.margen_x, opcion.margen_y, opcion.ancho, opcion.alto))
         fondo.blit(opcion.imagen,(opcion.margen_x - 15,opcion.margen_y - 22))
 
@@ -288,27 +272,28 @@ def cerrar():
 
 
 # Permite el ingreso de texto
-def input_texto(tecla, fuente, pos_nombre):
+def input_texto(fuente, pos_nombre):
     """NO FUNCIONA."""
-    """# Se limpia la pantalla (queda: fondo blanco, titulo)
-    limpia_pantalla(fondo, blanco, negro)"""
-    # Inicializando
-    nombre = ''
-    alfabeto = 'abcdefghijklmnopqrstuvwxyz0987654321'
-    # Almacena el nombre en string
-    if tecla == 'space':
-        nombre += ' '
-    elif tecla == 'return' or tecla == 'escape':
-        return
-    elif tecla == 'backspace':
-        nombre = nombre[:-1]
-    elif tecla in alfabeto:
-        nombre += tecla
+    ingreso = True
+    global nombre
+    while ingreso:
 
-    # Imprime lo ingresado en pantalla
-    """texto = fuente.render(nombre, 1, negro)
-    fondo.blit(texto, (0, 0))# Arreglar posicion]"""
-    return nombre
+	    for evento in pygame.event.get():
+	    	if evento.unicode.isalpha() or evento.unicode.isnumeric():
+	    		nombre += evento.unicode
+	    	if evento.type == K_BACKSPACE:
+	    		nombre = nombre[:-1]
+	    	if evento.type == K_SPACE:
+	    		nombre += ' '
+	    	if evento.type == QUIT:
+	    		cerrar()
+	    	if evento.type == K_RETURN:
+	    		ingreso = False
+	    	if evento.type == K_CLEAR:
+	    		nombre = ''
+
+	texto = fuente.render(nombre, 1, negro)
+	fondo.blit(texto, (0, 0))# Arreglar posicion
 
 
 # Carga los datos del tablero a un arreglo 2D
