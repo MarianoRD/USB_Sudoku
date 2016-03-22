@@ -20,7 +20,7 @@ class Bloques():
     """Variables necesarias para crear los Rect en PyGame."""
 
     ancho = 0
-    largo = 0
+    alto = 0
     margen_x = 0
     margen_y = 0
 
@@ -35,7 +35,8 @@ class Tablero(Bloques):
 class Boton(Bloques):
     """Clase hija de Bloques, para cargar imagenes."""
 
-    imagen = pygame.image.load('NuevaPartida.png').convert()
+    imagen = pygame.image.load('NuevaPartida.png')
+    texto = ""
 
 
 # ___________________________ Fin Clases _____________________________________#
@@ -44,13 +45,13 @@ class Boton(Bloques):
 # _____________________________ Valores iniciales ____________________________#
 # Fondo
 alto_fondo = 600
-largo_fondo = 800
-tamano_fondo = (largo_fondo, alto_fondo)
+ancho_fondo = 800
+tamano_fondo = (ancho_fondo, alto_fondo)
 
 # Tablero 9x9
 tablero9 = Tablero()
 tablero9.ancho = 360
-tablero9.largo = tablero9.ancho
+tablero9.alto = tablero9.ancho
 tablero9.celda = int(tablero9.ancho / 9)
 tablero9.margen_x = 200
 tablero9.margen_y = 100
@@ -59,7 +60,7 @@ tablero9.lineas = 9
 # Tablero 6x6
 tablero6 = Tablero()
 tablero6.ancho = 360
-tablero6.largo = tablero9.ancho
+tablero6.alto = tablero9.ancho
 tablero6.celda = int(tablero9.ancho / 6)
 tablero6.margen_x = 200
 tablero6.margen_y = 100
@@ -72,7 +73,8 @@ nueva_Partida.ancho = 150
 nueva_Partida.alto = 30
 nueva_Partida.margen_x = 320
 nueva_Partida.margen_y = 115
-nueva_Partida.imagen = pygame.image.load('nueva_partida.png').convert()
+nueva_Partida.imagen = pygame.image.load('nueva_partida.png')
+texto = "Nueva Partida"
 
 # Cargar partida
 cargar_partida = Boton()
@@ -80,7 +82,8 @@ cargar_partida.ancho = 150
 cargar_partida.alto = 30
 cargar_partida.margen_x = 320
 cargar_partida.margen_y = 190
-cargar_partida.imagen = pygame.image.load('cargar_partida.png').convert()
+cargar_partida.imagen = pygame.image.load('cargar_partida.png')
+texto = "Cargar Partida"
 
 # Records
 records = Boton()
@@ -88,7 +91,8 @@ records.ancho = 150
 records.alto = 30
 records.margen_x = 320
 records.margen_y = 265
-records.imagen = pygame.image.load('records.png').convert()
+records.imagen = pygame.image.load('records.png')
+texto = "Records"
 
 # Ayuda
 ayuda = Boton()
@@ -96,7 +100,8 @@ ayuda.ancho = 150
 ayuda.alto = 30
 ayuda.margen_x = 320
 ayuda.margen_y = 340
-ayuda.imagen = pygame.image.load('reglas.png').convert()
+ayuda.imagen = pygame.image.load('reglas.png')
+texto = "Ayuda"
 
 # Salir
 salir = Boton()
@@ -104,7 +109,8 @@ salir.ancho = 150
 salir.alto = 30
 salir.margen_x = 320
 salir.margen_y = 415
-salir.imagen = pygame.image.load('salir.png').convert()
+salir.imagen = pygame.image.load('salir.png')
+texto = "Salir"
 
 # ____________________ Fin botones del menu _______________
 
@@ -116,47 +122,47 @@ nombre = ''
 
 # _________________________ Inicio de Funciones ______________________________#
 # Crea los botones del menu
-def boton(x,y,l,a,ic,ac,accion=None):
+def boton(opcion):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-        if x + l > mouse[0] > x and  y + a > mouse[1] > y:
-            pygame.draw.rect(fondo,ac, (x,y,l,a))
-            fondo.blit(Nueva_Partida,(x-15,y-22))
-            if click[0] == 1 and accion != None:
-                if accion == "Nueva Partida":
+        if opcion.margen_x + opcion.ancho > mouse[0] > opcion.margen_x and  opcion.margen_y + opcion.alto > mouse[1] > opcion.margen_y:
+            pygame.draw.rect(fondo,(azul), (opcion.margen_x,opcion.margen_y,opcion.ancho,opcion.alto))
+            fondo.blit(opcion.imagen,(opcion.margen_x - 15,opcion.margen_y - 22))
+            if click[0] == 1 and opcion.texto != None:
+                if opcion.texto == "Nueva Partida":
                     dibuja_tablero(tablero9,negro)
-                elif accion == "Cargar Partida":
+                elif opcion.texto == "Cargar Partida":
                     dibuja_tablero(tablero9,negro)
-                elif accion == "Records":
+                elif opcion.texto == "Records":
                     dibuja_tablero(tablero9,negro)
-                elif accion == "Reglas":
+                elif opcion.texto == "Reglas":
                     dibuja_tablero(tablero9,negro)
-                elif accion == "Salir":
+                elif opcion.texto == "Salir":
                     pygame.quit()
                     quit()
 
         else:
-            pygame.draw.rect(fondo,ic, (x,y,l,a))
-            fondo.blit(Nueva_Partida,(x-15,y-22))
+            pygame.draw.rect(fondo, (blanco), (opcion.margen_x, opcion.margen_y, opcion.ancho, opcion.alto))
+            fondo.blit(opcion.imagen,(opcion.margen_x - 15,opcion.margen_y - 22))
 
 
 # Dibuja el menú principal
 def menu_juego(fondo,blanco,azul,sudoku):
     menu = True
 
-    while Menu:
+    while menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
         fondo.fill(blanco)
-        fondo.blit(sudoku, (largo_fondo/2-100, 0))
-        Boton(320,115,150,30,azul,rojo,"Nueva Partida")
-        Boton(320,190,150,30,azul,rojo,"Cargar Partida")
-        Boton(320,265,150,30,azul,rojo,"Records")
-        Boton(320,340,150,30,azul,rojo,"Reglas")
-        Boton(320,415,150,30,azul,rojo,"Salir")
+        fondo.blit(sudoku, (ancho_fondo/2-100, 0))
+        boton(nueva_Partida)
+        boton(cargar_partida)
+        boton(records)
+        boton(ayuda)
+        boton(salir)
 
         pygame.display.update()
 
@@ -302,8 +308,8 @@ limpia_pantalla(fondo, blanco, negro)
 fondo.fill(blanco)
 # Crea el titulo 'Sudoku'
 sudoku = titulos.render("Sudoku", 2, negro)
-fondo.blit(sudoku, (largo_fondo / (2 - 100), 0))# Arreglar la posicion
-Menu_juego(fondo, blanco, azul, sudoku)
+fondo.blit(sudoku, (ancho_fondo / (2 - 100), 0))# Arreglar la posicion
+menu_juego(fondo, blanco, azul, sudoku)
 # Dibuja el tablero
 while True:
 
