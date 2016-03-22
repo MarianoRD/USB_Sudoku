@@ -11,6 +11,7 @@ blanco = (255, 255, 255)
 negro = (0, 0, 0)
 gris = (84, 84, 84)
 azul = (47, 86, 233)
+rojo = (255, 0, 0)
 
 # ______________________________ Clases ______________________________________#
 
@@ -31,12 +32,20 @@ class Tablero(Bloques):
     lineas = 0
 
 
+class Boton(Bloques):
+    """Clase hija de Bloques, para cargar imagenes."""
+
+    imagen = pygame.image.load('NuevaPartida.png').convert()
+
+
 # ___________________________ Fin Clases _____________________________________#
 
 
 # _____________________________ Valores iniciales ____________________________#
 # Fondo
-tamano_fondo = (800, 600)
+alto_fondo = 600
+largo_fondo = 800
+tamano_fondo = (largo_fondo, alto_fondo)
 
 # Tablero 9x9
 tablero9 = Tablero()
@@ -56,6 +65,49 @@ tablero6.margen_x = 200
 tablero6.margen_y = 100
 tablero6.lineas = 6
 
+# ________Inicio Botones del Menu__________________________
+# Nueva partida
+nueva_Partida = Boton()
+nueva_Partida.ancho = 150
+nueva_Partida.alto = 30
+nueva_Partida.margen_x = 320
+nueva_Partida.margen_y = 115
+nueva_Partida.imagen = pygame.image.load('nueva_partida.png').convert()
+
+# Cargar partida
+cargar_partida = Boton()
+cargar_partida.ancho = 150
+cargar_partida.alto = 30
+cargar_partida.margen_x = 320
+cargar_partida.margen_y = 190
+cargar_partida.imagen = pygame.image.load('cargar_partida.png').convert()
+
+# Records
+records = Boton()
+records.ancho = 150
+records.alto = 30
+records.margen_x = 320
+records.margen_y = 265
+records.imagen = pygame.image.load('records.png').convert()
+
+# Ayuda
+ayuda = Boton()
+ayuda.ancho = 150
+ayuda.alto = 30
+ayuda.margen_x = 320
+ayuda.margen_y = 340
+ayuda.imagen = pygame.image.load('reglas.png').convert()
+
+# Salir
+salir = Boton()
+salir.ancho = 150
+salir.alto = 30
+salir.margen_x = 320
+salir.margen_y = 415
+salir.imagen = pygame.image.load('salir.png').convert()
+
+# ____________________ Fin botones del menu _______________
+
 # Cuadros por segundos a los que se refresca la pantalla
 fps = 30
 
@@ -63,6 +115,50 @@ fps = 30
 nombre = ''
 
 # _________________________ Inicio de Funciones ______________________________#
+# Crea los botones del menu
+def boton(x,y,l,a,ic,ac,accion=None):
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        if x + l > mouse[0] > x and  y + a > mouse[1] > y:
+            pygame.draw.rect(fondo,ac, (x,y,l,a))
+            fondo.blit(Nueva_Partida,(x-15,y-22))
+            if click[0] == 1 and accion != None:
+                if accion == "Nueva Partida":
+                    dibuja_tablero(tablero9,negro)
+                elif accion == "Cargar Partida":
+                    dibuja_tablero(tablero9,negro)
+                elif accion == "Records":
+                    dibuja_tablero(tablero9,negro)
+                elif accion == "Reglas":
+                    dibuja_tablero(tablero9,negro)
+                elif accion == "Salir":
+                    pygame.quit()
+                    quit()
+
+        else:
+            pygame.draw.rect(fondo,ic, (x,y,l,a))
+            fondo.blit(Nueva_Partida,(x-15,y-22))
+
+
+# Dibuja el menú principal
+def menu_juego(fondo,blanco,azul,sudoku):
+    menu = True
+
+    while Menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        fondo.fill(blanco)
+        fondo.blit(sudoku, (largo_fondo/2-100, 0))
+        Boton(320,115,150,30,azul,rojo,"Nueva Partida")
+        Boton(320,190,150,30,azul,rojo,"Cargar Partida")
+        Boton(320,265,150,30,azul,rojo,"Records")
+        Boton(320,340,150,30,azul,rojo,"Reglas")
+        Boton(320,415,150,30,azul,rojo,"Salir")
+
+        pygame.display.update()
 
 # Limpia la pantalla
 def limpia_pantalla(fondo, color_fondo, color_letras):# Arreglar entrada al tener la clase texto
@@ -78,7 +174,7 @@ def dibuja_tablero(tablero, color):
     """Dibuja las lineas que delimitan las celdas y el tablero."""
     # Se limpia la pantalla (queda: fondo blanco, titulo)
     limpia_pantalla(fondo, blanco, negro)
-
+    fondo.fill((255,255,255))
     # Variables de verificación
     x_veri = -1
     y_veri = -1
@@ -203,6 +299,12 @@ limpia_pantalla(fondo, blanco, negro)
 
 
 # ------ Ciclo principal del programa --------------
+fondo.fill(blanco)
+# Crea el titulo 'Sudoku'
+sudoku = titulos.render("Sudoku", 2, negro)
+fondo.blit(sudoku, (largo_fondo / (2 - 100), 0))# Arreglar la posicion
+Menu_juego(fondo, blanco, azul, sudoku)
+# Dibuja el tablero
 while True:
 
     # PROCESAMIENTO DE EVENTOS DEBAJO DE ESTA LINEA
@@ -210,8 +312,8 @@ while True:
         # Cierra el programa
         if evento.type == QUIT:
             cerrar()
-        # Dibuja el tablero si hay un click
-        """if evento.type == MOUSEBUTTONUP:
+        # Dibuja el tablero si hay un click"""
+        if evento.type == MOUSEBUTTONUP:
             # Reproduce el sonido click
             click.play()
             dibuja_tablero(tablero9, negro)
