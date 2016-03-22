@@ -1,129 +1,180 @@
 
 # Librerias
-import pygame, sys, time
-from pygame.locals import *
+import sys
+# import time
+import pygame
+from pygame import *
 
 # Colores
-blanco = (255,255,255)
-negro = (0,0,0)
-gris = (84,84,84)
+blanco = (255, 255, 255)
+negro = (0, 0, 0)
+gris = (84, 84, 84)
 azul = (47, 86, 233)
 
-
-# Valores globales
-tamaño_fondo = (800, 600)
-tamaño_tablero = 360
-assert(tamaño_tablero % 9 == 0), "El tablero tiene que ser multiplo de 9"
-tablero = (tamaño_tablero, tamaño_tablero)
-celda = int(tablero[0] / 9) # Tamaño de cada celda en el tablero
-margen_x = 200 # Margen que tiene el tablero horizontalmente
-margen_y = 100 # Margen que tiene el tablero verticalmente
-pos_titulo = ((margen_x+(3*celda)),(margen_y-60)) # Posicion del título
-pos_menu = (pos_titulo[0]+30, pos_titulo[1]+120) # Posición del Menu
-lineas = 9 # Numero de lineas tanto verticales como horizontales
+# ______________________________ Clases ______________________________________#
 
 
-########################## Inicio de Funciones #################################
+class Bloques():
+    ancho = 0
+    largo = 0
+    margen_x = 0
+    margen_y = 0
 
-# Menu
-def Menu(fondo,negro,pos_titulo, OpcionFont):
-	OpcionBack = (205,197,191)
 
-	# Crea opcion1 (Crear Nueva Partida)
-	Nva_partida = OpcionFont.render('Nueva partida', True, negro,OpcionBack)
-	Fondo_Op = Nva_partida.get_rect()
-	pos_nvapartida = (pos_titulo[0]+30, pos_titulo[1]+120)
-	Fondo_Op.center = (pos_nvapartida)
-	fondo.blit(Nva_partida,pos_nvapartida)
+class Tablero(Bloques):
+    celda = 0
+    lineas = 0
 
-	# Creea opcion2 (Descargar Partida existente)
-	Des_partida = OpcionFont.render('Cargar partida', True, negro,OpcionBack)
-	pos_despartida = (pos_nvapartida[0]-4, pos_nvapartida[1]+60)
-	Fondo_Op.center = (pos_despartida)
-	fondo.blit(Des_partida,pos_despartida)
+# ___________________________ Fin Clases _____________________________________#
 
-	# Creea opcion3 (Records)
-	Records = OpcionFont.render('Tabla de Records', True, negro,OpcionBack)
-	pos_record = (pos_despartida[0]-10, pos_despartida[1]+60)
-	Fondo_Op.center = (pos_record)
-	fondo.blit(Records,pos_record)
 
-	# Creea opcion4 (Reglas)
-	Reglas = OpcionFont.render('Como Jugar', True, negro,OpcionBack)
-	pos_regla = (pos_record[0]+30, pos_record[1]+60)
-	Fondo_Op.center = (pos_regla)
-	fondo.blit(Reglas,pos_regla)	
+# _____________________________ Valores iniciales ____________________________#
+# Fondo
+tamano_fondo = (800, 600)
 
-	# Creea opcion5 (Salir)
-	Salir = OpcionFont.render('Salir', True, negro,OpcionBack)
-	pos_salir = (pos_regla[0]+25, pos_regla[1]+60)
-	Fondo_Op.center = (pos_salir)
-	fondo.blit(Salir,pos_salir)
+# Tablero 9x9
+tablero9 = Tablero()
+tablero9.ancho = 360
+tablero9.largo = tablero9.ancho
+tablero9.celda = int(tablero9.ancho / 9)
+tablero9.margen_x = 200
+tablero9.margen_y = 100
+tablero9.lineas = 9
+
+# Tablero 6x6
+tablero6 = Tablero()
+tablero6.ancho = 360
+tablero6.largo = tablero9.ancho
+tablero6.celda = int(tablero9.ancho / 6)
+tablero6.margen_x = 200
+tablero6.margen_y = 100
+tablero6.lineas = 6
+
+# Cuadros por segundos a los que se refresca la pantalla
+fps = 30
+
+# _________________________ Inicio de Funciones ______________________________#
+
 
 # Dibuja las lineas que delimitan el tablero
-def dibuja_tablero(fondo, color, tablero, celda, margenx, margeny):
-	#Variables de verificación
-	x_veri = 0
-	y_veri = 0
-	i_veri = 0
-	# Dibuja las lineas horizontales
-	for x in range(0, 400, celda):
-		pygame.draw.line(fondo, color, (x+margenx, margeny), (x+margenx,tablero[0]+margeny))
-		x_veri = x_veri + 1
-	# Dibuja las lineas verticales
-	for y in range(0, 400, celda):
-		pygame.draw.line(fondo, color, (margenx,y+margeny), ((tablero[0]+margenx),(y+margeny)))
-		y_veri = y_veri + 1
-	# Verificación del dibujo del tablero
-	assert(x_veri == 10), "Tienen que haber 10 líneas horizontales"
-	assert(y_veri == 10), "Tienen que haber 10 líneas verticales"
-	# Resalta las regiones del tablero
-	for i in range(0, 400, (3*celda)):
-		pygame.draw.line(fondo, color, (i+margenx,+margeny), (i+margenx,360+margeny), 3) # Horizontales
-		pygame.draw.line(fondo, color, (margenx,i+margeny), (tablero[0]+margenx,i+margeny), 3) # Verticales
-		i_veri = i_veri + 1
-	# Verificación del dibujo de las regiones
-	assert(i_veri == 4), "Tienen que haber 9 regiones"
-	return None
+def dibuja_tablero(tablero, color):
+    # Variables de verificación
+    x_veri = -1
+    y_veri = -1
+    # Dibuja las lineas horizontales
+    for x in range(0, 400, tablero.celda):
+        pygame.draw.line(fondo, color,
+                    (x + tablero.margen_x, tablero.margen_y),
+                    (x + tablero.margen_x, tablero.ancho + tablero.margen_y))
+        x_veri = x_veri + 1
+    # Dibuja las lineas verticales
+    for y in range(0, 400, tablero.celda):
+        pygame.draw.line(fondo, color,
+                (tablero.margen_x, y + tablero.margen_y),
+                ((tablero.ancho + tablero.margen_x), (y + tablero.margen_y)))
+        y_veri = y_veri + 1
+    # Verificación del dibujo del tablero
+    assert(x_veri == tablero.lineas), "Faltan líneas horizontales"
+    assert(y_veri == tablero.lineas), "Faltan líneas verticales"
+    # Resalta las regiones del tablero
+    for i in range(0, 400, (3 * tablero.celda)):
+        # Horizontales
+        pygame.draw.line(fondo, color,
+                        (i + tablero.margen_x, tablero.margen_y),
+                        (i + tablero.margen_x, 360 + tablero.margen_y), 3)
+        # Verticales
+        pygame.draw.line(fondo, color,
+                (tablero.margen_x, i + tablero.margen_y),
+                (tablero.ancho + tablero.margen_x, i + tablero.margen_y), 3)
 
-# Pasa de las coordenadas de fondo a las celdas de tablero 
-#mousex, mousey = pygame.mouse.get_pos() necesario para que funcione
+    return None
+
+
+# Pasa de las coordenadas de fondo a las celdas de tablero
+# mousex, mousey = pygame.mouse.get_pos() necesario para que funcione
 def celdas_coord(x, y, celda, margenx, margeny):
-	izquierda = (x * celda) + margenx
-	arriba = (y * celda) + margeny
-	return (izquierda, arriba)
+    izquierda = (x * celda) + margenx
+    arriba = (y * celda) + margeny
+    return (izquierda, arriba)
 
-# Pasas de las celdas de tablero a las coordenadas de fondo 
+
+# Pasas de las celdas de tablero a las coordenadas de fondo
 # mousex, mousey = pygame.mouse.get_pos() Necesario para que funcione
 def coord_celdas(xmouse, ymouse, celda, margenx, margeny):
-	for x in range(9):
-		for y in range(9):
-			izquierda, arriba = celdas_coord(x, y, celda, margenx, margeny)
-			caja = pygame.Rect(izquierda, arriba, celda, celda)
-			if caja.collidepoint(xmouse, ymouse):
-				print (x,y)
-				return (x, y)
-	return (None, None)
+    for x in range(9):
+        for y in range(9):
+            izquierda, arriba = celdas_coord(x, y, celda, margenx, margeny)
+            caja = pygame.Rect(izquierda, arriba, celda, celda)
+            if caja.collidepoint(xmouse, ymouse):
+                print (x, y)
+                return (x, y)
+    return (None, None)
+
+
+# Cierra el programa
+def cerrar():
+    pygame.quit()
+    sys.exit()
+
+
+# Permite el ingreso de texto
+def input_texto(fps, fuente, pos_nombre, reloj):
+    """NO FUNCIONA"""
+    # Inicializando
+    nombre = []
+    alfabeto = 'abcdefghijklmnopqrstuvwxyz0987654321'
+    # Obtiene los eventos
+    evento = pygame.event.get()
+    # Velocidad de refrescamiento de la pantalla
+    reloj.tick(fps)
+    # Cierra el programa si presionan cerrar
+    for x in evento:
+        if x.type == QUIT:
+            cerrar()
+    # Ingresos de letras al string
+    for x in evento:
+        if x.type == KEYDOWN:
+            if x.key == K_BACKSPACE:
+                # Borra lo ultimo ingresado
+                nombre = nombre[:-1]
+            elif x.key == K_SPACE:
+                # Agrega un espacio
+                nombre += [' ']
+            elif x.key == K_BACKSPACE:
+                print(nombre)# Quitar
+                # Sale de la funcion
+                return
+            elif pygame.key.name(x.key) in alfabeto:
+                nombre += pygame.key.name(x.key)
+                print(nombre)
+    # Imprime lo ingresado en pantalla
+
 
 # Carga los datos del tablero a un arreglo 2D
 def cargar_tablero(nombre):
-	with open(nombre+".txt", 'r') as archivo:
-		numeros_tablero = archivo.readlines()
-	archivo.closed
+    with open(nombre + ".txt", 'r') as archivo:
+        numeros_tablero = archivo.readlines()
+    archivo.closed
+    return numeros_tablero
+
 
 # Guarda la partida
-def guardar_partida(numeros_tablero):
-	with open(nombre+".txt", 'w') as archivo:
-		for linea in numeros_tablero:
-			archivo.write(linea)
-	archivo.closed
+def guardar_partida(nombre, numeros_tablero):
+    with open(nombre + ".txt", 'w') as archivo:
+        for linea in numeros_tablero:
+            archivo.write(linea)
+    archivo.closed
 
 
+# Limpia la pantalla
+def limpia_pantalla(pantalla, fondo):
+    fondo.blit(pantalla, (0, 0))
 
-############################# Fin de Funciones #################################
+# _____________________________ Fin de Funciones _____________________________#
 
 # Inicializa PyGame
 pygame.init()
+reloj = pygame.time.Clock()
 # Fuentes
 titulos = pygame.font.SysFont("monospace", 60, italic=True)
 palabras_menu = pygame.font.SysFont("monospace", 17)
@@ -131,27 +182,26 @@ palabras_menu = pygame.font.SysFont("monospace", 17)
 # Sonidos
 click = pygame.mixer.Sound('click.wav')
 
-################################################################################
-#                           Inicio del programa                                #
-################################################################################
+# ____________________________________________________________________________#
+#                           Inicio del programa                               #
+# ____________________________________________________________________________#
 
 # Crea la pantalla
 pygame.display.set_caption('Sudoku Chevere')
-fondo = pygame.display.set_mode(tamaño_fondo)
+fondo = pygame.display.set_mode(tamano_fondo)
 fondo.fill(blanco)
 # Crea el titulo 'Sudoku'
 sudoku = titulos.render("Sudoku", 2, negro)
-fondo.blit(sudoku, pos_titulo)
-# Crea menu
-Menu(fondo,negro,pos_titulo, palabras_menu)
-#Dibuja el tablero
+fondo.blit(sudoku, (0, 0))# Arreglar la posicion
+
+# Dibuja el tablero
 
 while True:
-	evento = pygame.event.poll()
-	if evento.type == QUIT:
-		pygame.quit()
-		sys.exit()
-	elif evento.type == MOUSEBUTTONUP:
-		click.play() # Reproduce el sonido click
-		dibuja_tablero(fondo, negro, tablero, celda, margen_x, margen_y)
-	pygame.display.update()
+    evento = pygame.event.poll()
+    if evento.type == QUIT:
+        cerrar()
+    elif evento.type == MOUSEBUTTONUP:
+        # Reproduce el sonido click
+        click.play()
+        dibuja_tablero(tablero9, negro)
+    pygame.display.update()
