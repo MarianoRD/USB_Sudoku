@@ -1,3 +1,4 @@
+"""Un super Sudoku que no funciona."""
 
 # Librerias
 import sys
@@ -15,6 +16,8 @@ azul = (47, 86, 233)
 
 
 class Bloques():
+    """Variables necesarias para crear los Rect en PyGame."""
+
     ancho = 0
     largo = 0
     margen_x = 0
@@ -22,8 +25,11 @@ class Bloques():
 
 
 class Tablero(Bloques):
+    """Clase hija de Bloques, donde se agrega celdas y lineas de un tablero."""
+
     celda = 0
     lineas = 0
+
 
 # ___________________________ Fin Clases _____________________________________#
 
@@ -53,11 +59,26 @@ tablero6.lineas = 6
 # Cuadros por segundos a los que se refresca la pantalla
 fps = 30
 
+# Nombre del jugador
+nombre = ''
+
 # _________________________ Inicio de Funciones ______________________________#
 
+# Limpia la pantalla
+def limpia_pantalla(fondo, color_fondo, color_letras):# Arreglar entrada al tener la clase texto
+    """Limpia de la pantalla todos los graficos que ya no son necesarios."""
+    # Llena la pantalla de blanco
+    fondo.fill(blanco)
+    # Crea el titulo 'Sudoku'
+    sudoku = titulos.render("Sudoku", 2, negro)
+    fondo.blit(sudoku, (0, 0))# Arreglar la posicion
 
-# Dibuja las lineas que delimitan el tablero
+
 def dibuja_tablero(tablero, color):
+    """Dibuja las lineas que delimitan las celdas y el tablero."""
+    # Se limpia la pantalla (queda: fondo blanco, titulo)
+    limpia_pantalla(fondo, blanco, negro)
+
     # Variables de verificación
     x_veri = -1
     y_veri = -1
@@ -90,17 +111,17 @@ def dibuja_tablero(tablero, color):
     return None
 
 
-# Pasa de las coordenadas de fondo a las celdas de tablero
 # mousex, mousey = pygame.mouse.get_pos() necesario para que funcione
 def celdas_coord(x, y, celda, margenx, margeny):
+    """Pasa del sistema del juego al sistema coordenado celdas."""
     izquierda = (x * celda) + margenx
     arriba = (y * celda) + margeny
     return (izquierda, arriba)
 
 
-# Pasas de las celdas de tablero a las coordenadas de fondo
 # mousex, mousey = pygame.mouse.get_pos() Necesario para que funcione
 def coord_celdas(xmouse, ymouse, celda, margenx, margeny):
+    """Pasa del sistema coordenado celdas, al sistema coordenado del juego."""
     for x in range(9):
         for y in range(9):
             izquierda, arriba = celdas_coord(x, y, celda, margenx, margeny)
@@ -111,47 +132,39 @@ def coord_celdas(xmouse, ymouse, celda, margenx, margeny):
     return (None, None)
 
 
-# Cierra el programa
 def cerrar():
+    """Cierra el programa."""
     pygame.quit()
     sys.exit()
 
 
 # Permite el ingreso de texto
-def input_texto(fps, fuente, pos_nombre, reloj):
-    """NO FUNCIONA"""
+def input_texto(tecla, fuente, pos_nombre):
+    """NO FUNCIONA."""
+    """# Se limpia la pantalla (queda: fondo blanco, titulo)
+    limpia_pantalla(fondo, blanco, negro)"""
     # Inicializando
-    nombre = []
+    nombre = ''
     alfabeto = 'abcdefghijklmnopqrstuvwxyz0987654321'
-    # Obtiene los eventos
-    evento = pygame.event.get()
-    # Velocidad de refrescamiento de la pantalla
-    reloj.tick(fps)
-    # Cierra el programa si presionan cerrar
-    for x in evento:
-        if x.type == QUIT:
-            cerrar()
-    # Ingresos de letras al string
-    for x in evento:
-        if x.type == KEYDOWN:
-            if x.key == K_BACKSPACE:
-                # Borra lo ultimo ingresado
-                nombre = nombre[:-1]
-            elif x.key == K_SPACE:
-                # Agrega un espacio
-                nombre += [' ']
-            elif x.key == K_BACKSPACE:
-                print(nombre)# Quitar
-                # Sale de la funcion
-                return
-            elif pygame.key.name(x.key) in alfabeto:
-                nombre += pygame.key.name(x.key)
-                print(nombre)
+    # Almacena el nombre en string
+    if tecla == 'space':
+        nombre += ' '
+    elif tecla == 'return' or tecla == 'escape':
+        return
+    elif tecla == 'backspace':
+        nombre = nombre[:-1]
+    elif tecla in alfabeto:
+        nombre += tecla
+
     # Imprime lo ingresado en pantalla
+    """texto = fuente.render(nombre, 1, negro)
+    fondo.blit(texto, (0, 0))# Arreglar posicion]"""
+    return nombre
 
 
 # Carga los datos del tablero a un arreglo 2D
 def cargar_tablero(nombre):
+    """Carga los numeros del tablero del Sudoku de un archivo '.txt'."""
     with open(nombre + ".txt", 'r') as archivo:
         numeros_tablero = archivo.readlines()
     archivo.closed
@@ -160,25 +173,22 @@ def cargar_tablero(nombre):
 
 # Guarda la partida
 def guardar_partida(nombre, numeros_tablero):
+    """Guarda los numeros del tablero del Sudoku de un archivo '.txt'."""
     with open(nombre + ".txt", 'w') as archivo:
         for linea in numeros_tablero:
             archivo.write(linea)
     archivo.closed
 
 
-# Limpia la pantalla
-def limpia_pantalla(pantalla, fondo):
-    fondo.blit(pantalla, (0, 0))
-
 # _____________________________ Fin de Funciones _____________________________#
 
 # Inicializa PyGame
 pygame.init()
+# Velocidad de refrescamiento de la pantalla
 reloj = pygame.time.Clock()
 # Fuentes
 titulos = pygame.font.SysFont("monospace", 60, italic=True)
 palabras_menu = pygame.font.SysFont("monospace", 17)
-
 # Sonidos
 click = pygame.mixer.Sound('click.wav')
 
@@ -187,21 +197,41 @@ click = pygame.mixer.Sound('click.wav')
 # ____________________________________________________________________________#
 
 # Crea la pantalla
-pygame.display.set_caption('Sudoku Chevere')
 fondo = pygame.display.set_mode(tamano_fondo)
-fondo.fill(blanco)
-# Crea el titulo 'Sudoku'
-sudoku = titulos.render("Sudoku", 2, negro)
-fondo.blit(sudoku, (0, 0))# Arreglar la posicion
+pygame.display.set_caption('Sudoku Chevere')
+limpia_pantalla(fondo, blanco, negro)
 
-# Dibuja el tablero
 
+# ------ Ciclo principal del programa --------------
 while True:
-    evento = pygame.event.poll()
-    if evento.type == QUIT:
-        cerrar()
-    elif evento.type == MOUSEBUTTONUP:
-        # Reproduce el sonido click
-        click.play()
-        dibuja_tablero(tablero9, negro)
+
+    # PROCESAMIENTO DE EVENTOS DEBAJO DE ESTA LINEA
+    for evento in pygame.event.get():
+        # Cierra el programa
+        if evento.type == QUIT:
+            cerrar()
+        # Dibuja el tablero si hay un click
+        """if evento.type == MOUSEBUTTONUP:
+            # Reproduce el sonido click
+            click.play()
+            dibuja_tablero(tablero9, negro)
+        # Entrada del nombre del usuario (ARREGLAR DONDE VA LUEGO)"""
+        if evento.type == KEYUP and evento.key != 'backspace':
+            tecla = pygame.key.name(evento.key)
+            nombre += input_texto(tecla, palabras_menu, (0, 0))
+            print(nombre)
+        if evento.type == KEYUP and evento.key == 'backspace':
+            nombre -= nombre[:-1]
+            print(nombre)
+    # PROCESAMIENTO DE EVENTOS ENCIMA DE ESTA LINEA
+
+    # LOGICA DEL JUEGO DEBAJO DE ESTA LINEA
+
+    # LOGICA DEL JUEGO ENCIMA DE ESTA LINEA
+
+    # DIBUJO DE LA NUEVA PANTALLA
+
+    # Se actualiza todo lo hecho en el codigo
     pygame.display.update()
+    # Limitamos los FPS
+    reloj.tick(fps)
