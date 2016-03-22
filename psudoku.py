@@ -35,7 +35,7 @@ class Tablero(Bloques):
 class Boton(Bloques):
     """Clase hija de Bloques, para cargar imagenes."""
 
-    imagen = pygame.image.load('NuevaPartida.png')
+    imagen = pygame.image.load('nueva_partida.png')
     texto = ""
 
 
@@ -122,28 +122,28 @@ nombre = ''
 
 # _________________________ Inicio de Funciones ______________________________#
 # Crea los botones del menu
-def boton(opcion):
+def dibuja_boton(opcion):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-        if opcion.margen_x + opcion.ancho > mouse[0] > opcion.margen_x and  opcion.margen_y + opcion.alto > mouse[1] > opcion.margen_y:
+        caja = pygame.Rect(opcion.margen_x, opcion.margen_y, opcion.ancho, opcion.alto)
+        # Cambia el boton de color (FALTA POR IMPLEMENTAR)
+        """if caja.collidepoint(mouse[0], mouse[1]):
             pygame.draw.rect(fondo,(azul), (opcion.margen_x,opcion.margen_y,opcion.ancho,opcion.alto))
             fondo.blit(opcion.imagen,(opcion.margen_x - 15,opcion.margen_y - 22))
-            if click[0] == 1 and opcion.texto != None:
+            if click[0] == 1 and caja.collidepoint(mouse[0], mouse[1]):
                 if opcion.texto == "Nueva Partida":
-                    dibuja_tablero(tablero9,negro)
+                    dibuja_tablero(tablero9, negro)
                 elif opcion.texto == "Cargar Partida":
-                    dibuja_tablero(tablero9,negro)
+                    dibuja_tablero(tablero9, negro)
                 elif opcion.texto == "Records":
-                    dibuja_tablero(tablero9,negro)
+                    dibuja_tablero(tablero9, negro)
                 elif opcion.texto == "Reglas":
-                    dibuja_tablero(tablero9,negro)
+                    dibuja_tablero(tablero9, negro)
                 elif opcion.texto == "Salir":
                     pygame.quit()
-                    quit()
-
-        else:
-            pygame.draw.rect(fondo, (blanco), (opcion.margen_x, opcion.margen_y, opcion.ancho, opcion.alto))
-            fondo.blit(opcion.imagen,(opcion.margen_x - 15,opcion.margen_y - 22))
+                    quit()"""
+        pygame.draw.rect(fondo, (blanco), (opcion.margen_x, opcion.margen_y, opcion.ancho, opcion.alto))
+        fondo.blit(opcion.imagen,(opcion.margen_x - 15,opcion.margen_y - 22))
 
 
 # Dibuja el menú principal
@@ -151,18 +151,65 @@ def menu_juego(fondo,blanco,azul,sudoku):
     menu = True
 
     while menu:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        cajas = [
+    pygame.Rect(nueva_Partida.margen_x, nueva_Partida.margen_y, nueva_Partida.ancho, nueva_Partida.alto),
+    pygame.Rect(cargar_partida.margen_x, cargar_partida.margen_y, cargar_partida.ancho, cargar_partida.alto),
+    pygame.Rect(records.margen_x, records.margen_y, records.ancho, records.alto),
+    pygame.Rect(ayuda.margen_x, ayuda.margen_y, ayuda.ancho, ayuda.alto),
+    pygame.Rect(salir.margen_x, salir.margen_y, salir.ancho, salir.alto),
+        ]
 
+
+        # Dibuja los botones del menu
         fondo.fill(blanco)
         fondo.blit(sudoku, (ancho_fondo/2-100, 0))
-        boton(nueva_Partida)
-        boton(cargar_partida)
-        boton(records)
-        boton(ayuda)
-        boton(salir)
+        dibuja_boton(nueva_Partida)
+        dibuja_boton(cargar_partida)
+        dibuja_boton(records)
+        dibuja_boton(ayuda)
+        dibuja_boton(salir)
+
+        for event in pygame.event.get():
+            # Variables a verificar
+            mouse = pygame.mouse.get_pos()
+            click = pygame.mouse.get_pressed()
+            # Sale del juego
+            if event.type == pygame.QUIT:
+                cerrar()
+            # Reacciona si se pasa por encima de la opcion (FALTAN IMG HOVER)
+            if cajas[0].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, (azul), (nueva_Partida.margen_x, nueva_Partida.margen_y, nueva_Partida.ancho, nueva_Partida.alto))
+                #fondo.blit(opcion.imagen, (opcion.margen_x - 15, opcion.margen_y - 22))
+            if cajas[1].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, azul, (cargar_partida.margen_x, cargar_partida.margen_y, cargar_partida.ancho, cargar_partida.alto))
+            if cajas[2].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, azul, (records.margen_x, records.margen_y, records.ancho, records.alto))
+            if cajas[3].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, azul, (ayuda.margen_x, ayuda.margen_y, ayuda.ancho, ayuda.alto))
+            if cajas[4].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, azul, (salir.margen_x, salir.margen_y, salir.ancho, salir.alto))
+
+            if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                dibuja_tablero(tablero9, negro)
+                menu = False
+            if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                dibuja_tablero(tablero9, negro)
+                menu = False
+            if click[0] == 1 and cajas[2].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                dibuja_tablero(tablero9, negro)
+                menu = False
+            if click[0] == 1 and cajas[3].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                dibuja_tablero(tablero9, negro)
+                menu = False
+            if click[0] == 1 and cajas[4].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                cerrar()
 
         pygame.display.update()
 
@@ -292,7 +339,7 @@ reloj = pygame.time.Clock()
 titulos = pygame.font.SysFont("monospace", 60, italic=True)
 palabras_menu = pygame.font.SysFont("monospace", 17)
 # Sonidos
-click = pygame.mixer.Sound('click.wav')
+click_sonido = pygame.mixer.Sound('click.wav')
 
 # ____________________________________________________________________________#
 #                           Inicio del programa                               #
@@ -319,10 +366,9 @@ while True:
         if evento.type == QUIT:
             cerrar()
         # Dibuja el tablero si hay un click"""
-        if evento.type == MOUSEBUTTONUP:
+        #if evento.type == MOUSEBUTTONUP:
             # Reproduce el sonido click
-            click.play()
-            dibuja_tablero(tablero9, negro)
+            #dibuja_tablero(tablero9, negro)
         # Entrada del nombre del usuario (ARREGLAR DONDE VA LUEGO)"""
         if evento.type == KEYUP and evento.key != 'backspace':
             tecla = pygame.key.name(evento.key)
