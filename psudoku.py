@@ -10,6 +10,7 @@ blanco = (255, 255, 255)
 negro = (0, 0, 0)
 gris = (84, 84, 84)
 azul = (47, 86, 233)
+rojo = (255,0,0)
 
 # ______________________________ Clases ______________________________________#
 
@@ -30,7 +31,9 @@ class Tablero(Bloques):
 
 # _____________________________ Valores iniciales ____________________________#
 # Fondo
-tamano_fondo = (800, 600)
+alto_fondo = 600
+largo_fondo = 800
+tamano_fondo = (largo_fondo, alto_fondo)
 
 # Tablero 9x9
 tablero9 = Tablero()
@@ -50,14 +53,62 @@ tablero6.margen_x = 200
 tablero6.margen_y = 100
 tablero6.lineas = 6
 
+# Opciones del menu
+Nueva_Partida = pygame.image.load('Nueva Partida.png')
+
 # Cuadros por segundos a los que se refresca la pantalla
 fps = 30
 
 # _________________________ Inicio de Funciones ______________________________#
+# Crea los botones del menu
+def Boton(x,y,l,a,ic,ac,accion=None):
+		mouse = pygame.mouse.get_pos()
+		click = pygame.mouse.get_pressed()
+		if x + l > mouse[0] > x and  y + a > mouse[1] > y:
+			pygame.draw.rect(fondo,ac, (x,y,l,a))
+			fondo.blit(Nueva_Partida,(x-15,y-22))
+			if click[0] == 1 and accion != None:
+				if accion == "Nueva Partida":
+					dibuja_tablero(tablero9,negro)
+				elif accion == "Cargar Partida":
+					dibuja_tablero(tablero9,negro)
+				elif accion == "Records":
+					dibuja_tablero(tablero9,negro)
+				elif accion == "Reglas":
+					dibuja_tablero(tablero9,negro)
+				elif accion == "Salir":
+					pygame.quit()
+					quit()
+
+		else:
+			pygame.draw.rect(fondo,ic, (x,y,l,a))
+			fondo.blit(Nueva_Partida,(x-15,y-22))
+
+
+# Dibuja el menú principal
+def Menu_juego(fondo,blanco,azul,sudoku):
+	Menu = True
+	
+	while Menu:
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				quit()
+
+		fondo.fill(blanco)
+		fondo.blit(sudoku, (largo_fondo/2-100, 0))
+		Boton(320,115,150,30,azul,rojo,"Nueva Partida")
+		Boton(320,190,150,30,azul,rojo,"Cargar Partida")
+		Boton(320,265,150,30,azul,rojo,"Records")
+		Boton(320,340,150,30,azul,rojo,"Reglas")
+		Boton(320,415,150,30,azul,rojo,"Salir")
+		
+		pygame.display.update()
 
 
 # Dibuja las lineas que delimitan el tablero
 def dibuja_tablero(tablero, color):
+    fondo.fill((255,255,255))
     # Variables de verificación
     x_veri = -1
     y_veri = -1
@@ -192,10 +243,10 @@ fondo = pygame.display.set_mode(tamano_fondo)
 fondo.fill(blanco)
 # Crea el titulo 'Sudoku'
 sudoku = titulos.render("Sudoku", 2, negro)
-fondo.blit(sudoku, (0, 0))# Arreglar la posicion
-
+fondo.blit(sudoku, (largo_fondo/2-100, 0))# Arreglar la posicion
+Menu_juego(fondo,blanco,azul,sudoku)
 # Dibuja el tablero
-
+"""
 while True:
     evento = pygame.event.poll()
     if evento.type == QUIT:
@@ -205,3 +256,4 @@ while True:
         click.play()
         dibuja_tablero(tablero9, negro)
     pygame.display.update()
+"""
