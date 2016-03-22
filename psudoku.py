@@ -13,16 +13,28 @@ gris = (84, 84, 84)
 azul = (47, 86, 233)
 rojo = (255, 0, 0)
 
+# Inicializa PyGame
+pygame.init()
+
+# Fuentes
+titulos = pygame.font.SysFont("monospace", 60, italic=True)
+palabras_menu = pygame.font.SysFont("monospace", 17)
+
 # ______________________________ Clases ______________________________________#
 
 
-class Bloques():
+class Imagen():
+    """Variables necesarias para cualquier imagen que se quiera dibujar."""
+
+    margen_x = 0
+    margen_y = 0
+
+
+class Bloques(Imagen):
     """Variables necesarias para crear los Rect en PyGame."""
 
     ancho = 0
     alto = 0
-    margen_x = 0
-    margen_y = 0
 
 
 class Tablero(Bloques):
@@ -38,6 +50,20 @@ class Boton(Bloques):
     imagen = pygame.image.load('nueva_partida.png')
     texto = ""
 
+
+class Texto(Imagen):
+    """Variables para blitear imagenes."""
+
+    texto = ''
+    fuente = palabras_menu
+    antialias = True
+    color = negro
+    renderizado = None
+
+    def renderizar(self):
+        """Renderiza el texto, para poder ser mostrado en pantalla."""
+        self.renderizado = self.fuente.render(self.texto, self.antialias, self.color)
+        return None
 
 # ___________________________ Fin Clases _____________________________________#
 
@@ -67,7 +93,23 @@ tablero6.margen_y = 100
 tablero6.lineas = 6
 
 # Nombre del jugador
-nombre = ''
+nombre = Texto()
+nombre.texto = ''
+nombre.fuente = palabras_menu
+nombre.color = negro
+nombre.margen_x = 0
+nombre.margen_y = 200
+nombre.renderizar()
+
+# Texto de bienvenida
+bienvenida = Texto()
+bienvenida.texto = 'Bienvenido a Sudoku Chevere, por favor introduzca su nombre'
+bienvenida.fuente = titulos
+bienvenida.color = negro
+bienvenida.margen_x = 0
+bienvenida.margen_y = 0
+bienvenida.renderizar()
+
 
 # ________Inicio Botones del Menu__________________________
 # Nueva partida
@@ -119,9 +161,6 @@ texto = "Salir"
 
 # Cuadros por segundos a los que se refresca la pantalla
 fps = 30
-
-# Nombre del jugador
-nombre = ''
 
 # _________________________ Inicio de Funciones ______________________________#
 # Crea los botones del menu
@@ -272,28 +311,43 @@ def cerrar():
 
 
 # Permite el ingreso de texto
-def input_texto(fuente, pos_nombre):
+def input_texto(nombre, titulo):
     """NO FUNCIONA."""
     ingreso = True
-    global nombre
+    # Crea el fondo
+    fondo.fill(blanco)
+    fondo.blit(titulo.renderizado, (titulo.margen_x, titulo.margen_y))
+    pygame.display.update()
+
     while ingreso:
+        # Guarda el nombre en el string
+        for evento in pygame.event.get():
+            if evento.type == KEYDOWN:
+                if evento.unicode.isalpha() or evento.unicode.isnumeric():
+                    nombre.texto += evento.unicode
+                if evento.key == K_BACKSPACE:
+                    nombre.texto = nombre.texto[:-1]
+                if evento.key == K_SPACE:
+                    nombre.texto += ' '
+                if evento.key == K_RETURN:
+                    ingreso = False
+                if evento.key == K_CLEAR:
+                    nombre.texto = ''
+            if evento.type == QUIT:
+                    cerrar()
+            else:
+                pass
 
-	    for evento in pygame.event.get():
-	    	if evento.unicode.isalpha() or evento.unicode.isnumeric():
-	    		nombre += evento.unicode
-	    	if evento.type == K_BACKSPACE:
-	    		nombre = nombre[:-1]
-	    	if evento.type == K_SPACE:
-	    		nombre += ' '
-	    	if evento.type == QUIT:
-	    		cerrar()
-	    	if evento.type == K_RETURN:
-	    		ingreso = False
-	    	if evento.type == K_CLEAR:
-	    		nombre = ''
+        # Escribe el nombre ingresado en pantalla
+        fondo.fill(blanco)
+        fondo.blit(titulo.renderizado, (titulo.margen_x, titulo.margen_y))
+        nombre.renderizar()
+        fondo.blit(nombre.renderizado, (nombre.margen_x, nombre.margen_y))
+        pygame.display.update()
 
-	texto = fuente.render(nombre, 1, negro)
-	fondo.blit(texto, (0, 0))# Arreglar posicion
+    """texto = fuente.render(nombre, 1, negro)
+    # Arreglar posicion
+    fondo.blit(texto, (0, 0))"""
 
 
 # Carga los datos del tablero a un arreglo 2D
@@ -316,13 +370,10 @@ def guardar_partida(nombre, numeros_tablero):
 
 # _____________________________ Fin de Funciones _____________________________#
 
-# Inicializa PyGame
-pygame.init()
+
 # Velocidad de refrescamiento de la pantalla
 reloj = pygame.time.Clock()
-# Fuentes
-titulos = pygame.font.SysFont("monospace", 60, italic=True)
-palabras_menu = pygame.font.SysFont("monospace", 17)
+
 # Sonidos
 click_sonido = pygame.mixer.Sound('click.wav')
 
@@ -341,6 +392,7 @@ fondo.fill(blanco)
 # Crea el titulo 'Sudoku'
 sudoku = titulos.render("Sudoku", 2, negro)
 fondo.blit(sudoku, (ancho_fondo / (2 - 100), 0))# Arreglar la posicion
+input_texto(nombre, bienvenida)
 menu_juego(fondo, blanco, azul, sudoku)
 # Dibuja el tablero
 while True:
