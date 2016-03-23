@@ -51,7 +51,7 @@ class Rectangulo():
 class Imagen(Rectangulo):
     """Variables necesarias para cualquier imagen que se quiera dibujar."""
 
-    ruta = os.path.join('imagenes', 'nueva_Partida.png')
+    ruta = os.path.join('imagenes', 'nueva_partida.png')
     imagen = pygame.image.load(ruta)
 
     def indica_ruta(self):
@@ -326,7 +326,7 @@ def elegir_dificultad(datos_menu):
 				dificultad = False
 			if click[0] == 1 and cajas[4].collidepoint(mouse[0], mouse[1]):
 				dificultad = False
-				menu_juego(datos_menu)
+				menu_juego(datos_menu[0], datos_menu[1], datos_menu[2], datos_menu[3])
 
 
 	
@@ -347,6 +347,7 @@ def dibuja_boton(opcion):
 def menu_juego(fondo, blanco, azul, sudoku):
     """Funcion que muestra el menu en la pantalla."""
     datos_menu = (fondo,blanco,azul,sudoku)
+    print(datos_menu)
     menu = True
     # Ciclo principal
     while menu:
@@ -396,15 +397,15 @@ def menu_juego(fondo, blanco, azul, sudoku):
                 #menu = False
             if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                dibuja_tablero(tablero9, negro)
+                dibuja_tablero(tablero9, negro, imagen_fondo, sudoku)
                 menu = False
             if click[0] == 1 and cajas[2].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                dibuja_tablero(tablero9, negro)
+                dibuja_tablero(tablero9, negro, imagen_fondo, sudoku)
                 menu = False
             if click[0] == 1 and cajas[3].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                dibuja_tablero(tablero9, negro)
+                dibuja_tablero(tablero9, negro, imagen_fondo, sudoku)
                 menu = False
             if click[0] == 1 and cajas[4].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
