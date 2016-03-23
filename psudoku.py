@@ -2,6 +2,7 @@
 
 # Librerias
 import sys
+import os.path
 # import time
 import pygame
 from pygame import *
@@ -28,12 +29,13 @@ palabras_menu = pygame.font.SysFont("monospace", 17)
 # Define la pantalla principal y el título de la pantalla
 fondo = pygame.display.set_mode(tamano_fondo)
 pygame.display.set_caption("Sudoku Chevere")
-imagen_fondo = pygame.image.load('fondo.png').convert()
-
+ruta_imagen_fondo = os.path.join('imagenes', 'fondo.png')
+imagen_fondo = pygame.image.load(ruta_imagen_fondo).convert()
 
 
 # Icono del programa
-icono = pygame.image.load('logo.png').convert()
+ruta_imagen_logo = os.path.join('imagenes', 'logo.png')
+icono = pygame.image.load(ruta_imagen_logo).convert()
 pygame.display.set_icon(icono)
 
 # ______________________________ Clases ______________________________________#
@@ -49,7 +51,11 @@ class Rectangulo():
 class Imagen(Rectangulo):
     """Variables necesarias para cualquier imagen que se quiera dibujar."""
 
-    imagen = pygame.image.load('nueva_partida.png')
+    ruta = os.path.join('imagenes', 'nueva_Partida.png')
+    imagen = pygame.image.load(ruta)
+
+    def indica_ruta(self):
+    	self.imagen = pygame.image.load(self.ruta)
 
 
 class Bloques(Rectangulo):
@@ -66,10 +72,9 @@ class Tablero(Bloques):
     lineas = 0
 
 
-class Boton(Bloques):
+class Boton(Imagen):
     """Clase hija de Bloques, para cargar imagenes."""
 
-    imagen = pygame.image.load('nueva_partida.png')
     texto = ""
 
 
@@ -128,11 +133,21 @@ bienvenida.margen_x = 0
 bienvenida.margen_y = 0
 bienvenida.renderizar()
 
+# Texto de Elegir Dificultades
+elegir_dificultadtxt = Texto()
+elegir_dificultadtxt.texto = 'Elegir Dificultad'
+elegir_dificultadtxt.fuente = titulos
+elegir_dificultadtxt.color = negro
+elegir_dificultadtxt.margen_x = 200
+elegir_dificultadtxt.margen_y = 10
+elegir_dificultadtxt.renderizar()
+
 # Titulo 'Sudoku'
 sudoku = Imagen()
 sudoku.margen_x = 150
 sudoku.margen_y = 10
-sudoku.imagen = pygame.image.load('sudoku.png')
+sudoku.ruta = os.path.join('imagenes', 'sudoku.png')
+sudoku.indica_ruta()
 
 
 # ________Inicio Botones del Menu__________________________
@@ -142,7 +157,8 @@ nueva_Partida.ancho = 150
 nueva_Partida.alto = 30
 nueva_Partida.margen_x = 320
 nueva_Partida.margen_y = 185
-nueva_Partida.imagen = pygame.image.load('nueva_partida.png')
+nueva_Partida.ruta = os.path.join('imagenes', 'nueva_partida.png')
+nueva_Partida.indica_ruta()
 texto = "Nueva Partida"
 
 # Cargar partida
@@ -151,7 +167,8 @@ cargar_partida.ancho = 150
 cargar_partida.alto = 30
 cargar_partida.margen_x = 320
 cargar_partida.margen_y = 260
-cargar_partida.imagen = pygame.image.load('cargar_partida.png')
+cargar_partida.ruta = os.path.join('imagenes', 'cargar_partida.png')
+cargar_partida.indica_ruta()
 texto = "Cargar Partida"
 
 # Records
@@ -160,7 +177,8 @@ records.ancho = 150
 records.alto = 30
 records.margen_x = 320
 records.margen_y = 335
-records.imagen = pygame.image.load('records.png')
+records.ruta = os.path.join('imagenes', 'records.png')
+records.indica_ruta()
 texto = "Records"
 
 # Ayuda
@@ -169,7 +187,8 @@ ayuda.ancho = 150
 ayuda.alto = 30
 ayuda.margen_x = 320
 ayuda.margen_y = 410
-ayuda.imagen = pygame.image.load('reglas.png')
+ayuda.ruta = os.path.join('imagenes', 'reglas.png')
+ayuda.indica_ruta()
 texto = "Ayuda"
 
 # Salir
@@ -178,15 +197,145 @@ salir.ancho = 150
 salir.alto = 30
 salir.margen_x = 320
 salir.margen_y = 485
-salir.imagen = pygame.image.load('salir.png')
+salir.ruta = os.path.join('imagenes', 'salir.png')
+salir.indica_ruta()
 texto = "Salir"
 
-# ____________________ Fin botones del menu _______________
+# ____________________ FIN de botones del menu _______________
+
+
+#_____________________ Botones de elegir dificultad _________________
+
+# Entrenamiento
+entrenamiento = Boton()
+entrenamiento.ancho = 150
+entrenamiento.alto = 30
+entrenamiento.margen_x = 320
+entrenamiento.margen_y = 185
+entrenamiento.ruta = os.path.join('imagenes', 'entrenamiento.png')
+entrenamiento.indica_ruta()
+texto = "Entrenamiento"
+
+# Facil
+facil = Boton()
+facil.ancho = 150
+facil.alto = 30
+facil.margen_x = 320
+facil.margen_y = 260
+facil.ruta = os.path.join('imagenes', 'facil.png')
+facil.indica_ruta()
+texto = "Facil"
+
+# Dificil
+dificil = Boton()
+dificil.ancho = 150
+dificil.alto = 30
+dificil.margen_x = 320
+dificil.margen_y = 335
+dificil.ruta = os.path.join('imagenes', 'dificil.png')
+dificil.indica_ruta()
+texto = "Dificil"
+
+# Extremo
+extremo = Boton()
+extremo.ancho = 150
+extremo.alto = 30
+extremo.margen_x = 320
+extremo.margen_y = 410
+extremo.ruta = os.path.join('imagenes', 'extremo.png')
+extremo.indica_ruta()
+texto = "Extremo"
+
+# Menu: Si, volvemos al menu principal.
+menu = Boton()
+menu.ancho = 150
+menu.alto = 30
+menu.margen_x = 320
+menu.margen_y = 410
+menu.ruta = os.path.join('imagenes', 'menu_principal.png')
+menu.indica_ruta()
+texto = "Menu"
+
+#_____________________  FIN de Botones de elegir dificultad _________________
+
 
 # Cuadros por segundos a los que se refresca la pantalla
 fps = 30
 
+
 # _________________________ Inicio de Funciones ______________________________#
+
+# Funcion para elegir dificultades
+def elegir_dificultad(datos_menu):
+	dificultad = True
+	global menu
+	cajas = [
+    pygame.Rect(entrenamiento.margen_x, entrenamiento.margen_y, entrenamiento.ancho, entrenamiento.alto),
+    pygame.Rect(facil.margen_x, facil.margen_y, facil.ancho, facil.alto),
+    pygame.Rect(dificil.margen_x, dificil.margen_y, dificil.ancho, dificil.alto),
+    pygame.Rect(extremo.margen_x, extremo.margen_y, extremo.ancho, extremo.alto),
+    pygame.Rect(menu.margen_x, menu.margen_y, menu.ancho, menu.alto)
+        ]
+
+	while dificultad:
+
+        # Dibuja los botones del menu
+		fondo.blit(imagen_fondo, (0, 0))
+		fondo.blit(elegir_dificultadtxt.renderizado, (elegir_dificultadtxt.margen_x, elegir_dificultadtxt.margen_y))
+		dibuja_boton(entrenamiento)
+		dibuja_boton(facil)
+		dibuja_boton(dificil)
+		dibuja_boton(extremo)
+		dibuja_boton(menu)
+
+		for event in pygame.event.get():
+            # Variables a verificar
+			mouse = pygame.mouse.get_pos()
+			click = pygame.mouse.get_pressed()
+            # Sale del juego
+			if event.type == pygame.QUIT:
+				cerrar()
+            # Reacciona si se pasa por encima de la opcion (FALTAN IMG HOVER)
+			if cajas[0].collidepoint(mouse[0], mouse[1]):
+				pygame.draw.rect(fondo, (azul), (entrenamiento.margen_x, entrenamiento.margen_y, entrenamiento.ancho, entrenamiento.alto))
+                #fondo.blit(opcion.imagen, (opcion.margen_x - 15, opcion.margen_y - 22))
+			if cajas[1].collidepoint(mouse[0], mouse[1]):
+				pygame.draw.rect(fondo, azul, (facil.margen_x, facil.margen_y, facil.ancho, facil.alto))
+			if cajas[2].collidepoint(mouse[0], mouse[1]):
+				pygame.draw.rect(fondo, azul, (dificil.margen_x, dificil.margen_y, dificil.ancho, dificil.alto))
+			if cajas[3].collidepoint(mouse[0], mouse[1]):
+				pygame.draw.rect(fondo, azul, (extremo.margen_x, extremo.margen_y, extremo.ancho, extremo.alto))
+			if cajas[4].collidepoint(mouse[0], mouse[1]):
+				pygame.draw.rect(fondo, azul, (menu.margen_x, menu.margen_y, menu.ancho, menu.alto))
+
+			if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
+				click_sonido.play()
+				#elegir_dificultad()
+				dificultad = False
+			if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
+				click_sonido.play()
+				#dibuja_tablero(tablero9, negro)
+				dificultad = False
+			if click[0] == 1 and cajas[2].collidepoint(mouse[0], mouse[1]):
+				click_sonido.play()
+				#dibuja_tablero(tablero9, negro)
+				dificultad = False
+			if click[0] == 1 and cajas[3].collidepoint(mouse[0], mouse[1]):
+				click_sonido.play()
+				#dibuja_tablero(tablero9, negro)
+				dificultad = False
+			if click[0] == 1 and cajas[4].collidepoint(mouse[0], mouse[1]):
+				dificultad = False
+				menu_juego(datos_menu)
+
+
+	
+
+
+		pygame.display.update()
+
+
+
 # Crea los botones del menu
 def dibuja_boton(opcion):
     """Funcion que dibuja los botones del menu"""
@@ -197,6 +346,7 @@ def dibuja_boton(opcion):
 # Dibuja el menú principal
 def menu_juego(fondo, blanco, azul, sudoku):
     """Funcion que muestra el menu en la pantalla."""
+    datos_menu = (fondo,blanco,azul,sudoku)
     menu = True
     # Ciclo principal
     while menu:
@@ -208,7 +358,7 @@ def menu_juego(fondo, blanco, azul, sudoku):
     pygame.Rect(cargar_partida.margen_x, cargar_partida.margen_y, cargar_partida.ancho, cargar_partida.alto),
     pygame.Rect(records.margen_x, records.margen_y, records.ancho, records.alto),
     pygame.Rect(ayuda.margen_x, ayuda.margen_y, ayuda.ancho, ayuda.alto),
-    pygame.Rect(salir.margen_x, salir.margen_y, salir.ancho, salir.alto),
+    pygame.Rect(salir.margen_x, salir.margen_y, salir.ancho, salir.alto)
         ]
 
         # Dibuja los botones del menu
@@ -242,8 +392,8 @@ def menu_juego(fondo, blanco, azul, sudoku):
 
             if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                dibuja_tablero(tablero9, negro, imagen_fondo, sudoku)
-                menu = False
+                menu = elegir_dificultad(datos_menu)
+                #menu = False
             if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
                 dibuja_tablero(tablero9, negro)
