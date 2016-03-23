@@ -97,6 +97,23 @@ class Texto(Imagen):
 
 # _____________________________ Valores iniciales ____________________________#
 
+# #################################################
+# Gato trabajador
+gato = Imagen()
+gato.margen_x = 236
+gato.margen_y = 50
+gato.ruta = os.path.join('imagenes', 'gato.jpg')
+gato.indica_ruta()
+
+# Estamos trabajando
+trabajando = Texto()
+trabajando.texto = '¿Qué haces por aquí?'
+trabajando.fuente = titulos
+trabajando.color = negro
+trabajando.margen_x = 30
+trabajando.margen_y = 500
+trabajando.renderizar()
+# ###################################################
 # Tablero 9x9
 tablero9 = Tablero()
 tablero9.ancho = 360
@@ -345,15 +362,15 @@ def elegir_dificultad(datos_menu):
 				dificultad = False
 			if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
 				click_sonido.play()
-				#dibuja_tablero(tablero9, negro)
+				lindo_gatito(gato, imagen_fondo, trabajando)
 				dificultad = False
 			if click[0] == 1 and cajas[2].collidepoint(mouse[0], mouse[1]):
 				click_sonido.play()
-				#dibuja_tablero(tablero9, negro)
+				lindo_gatito(gato, imagen_fondo, trabajando)
 				dificultad = False
 			if click[0] == 1 and cajas[3].collidepoint(mouse[0], mouse[1]):
 				click_sonido.play()
-				#dibuja_tablero(tablero9, negro)
+				lindo_gatito(gato, imagen_fondo, trabajando)
 				dificultad = False
 			if click[0] == 1 and cajas[4].collidepoint(mouse[0], mouse[1]):
 				dificultad = False
@@ -465,11 +482,11 @@ def menu_juego(fondo, blanco, azul, sudoku):
                 menu = False
             if click[0] == 1 and cajas[2].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                dibuja_tablero(tablero9, negro, imagen_fondo, sudoku)
+                lindo_gatito(gato, imagen_fondo, trabajando)
                 menu = False
             if click[0] == 1 and cajas[3].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                dibuja_tablero(tablero9, negro, imagen_fondo, sudoku)
+                lindo_gatito(gato, imagen_fondo, trabajando)
                 menu = False
             if click[0] == 1 and cajas[4].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
@@ -605,6 +622,17 @@ def guardar_partida(nombre, numeros_tablero):
         for linea in numeros_tablero:
             archivo.write(linea)
     archivo.closed
+
+
+#########################################################
+def lindo_gatito(gato, imagen_fondo, trabajando):
+    """Dibuja un lindo gatito."""
+    fondo.blit(imagen_fondo, (0, 0))
+    fondo.blit(gato.imagen, (gato.margen_x, gato.margen_y))
+    fondo.blit(trabajando.renderizado, (trabajando.margen_x, trabajando.margen_y))
+
+    pygame.display.update()
+######################################################
 
 
 # _____________________________ Fin de Funciones _____________________________#
