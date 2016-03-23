@@ -20,6 +20,10 @@ pygame.init()
 titulos = pygame.font.SysFont("monospace", 60, italic=True)
 palabras_menu = pygame.font.SysFont("monospace", 17)
 
+# Icono del programa
+icono = pygame.image.load('logo.png')
+pygame.display.set_icon(icono)
+
 # ______________________________ Clases ______________________________________#
 
 
