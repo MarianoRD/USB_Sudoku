@@ -40,6 +40,53 @@ pygame.display.set_icon(icono)
 
 # ______________________________ Clases ______________________________________#
 
+class Juego9x9()
+    """Donde se corre el juego."""
+
+    tablero_solucion = [[0 for x in range(9)] for y in range(9)]
+    tablero_juego = [[0 for x in range(9)] for y in range(9)]
+    fuente = palabras_menu
+    color = negro
+    tiempo = 0
+    puntaje = 0
+    errores = 0
+    jugador = ''
+    archivo = os.path.join('tableros', '')
+
+    def __init__(self, nombre_archivo):
+        self.archivo = archivo = os.path.join('tableros', nombre_archivo+'.txt')
+
+    # Carga los datos del tablero a un arreglo 2D
+    def cargar_tablero(self):
+        """Carga los numeros del tablero del Sudoku de un archivo '.txt'."""
+        with open(self.archivo + ".txt", 'r') as f:
+            temp = f.readlines()
+            for i in range(6):
+                for j in range(6):
+                    self.tablero_solucion[i][j] = temp[i][j]
+        print(self.tablero_solucion)
+
+    def copia_numeros(self):
+        """Crea la matriz a ser utilizada en el juego"""
+
+        for x in range(9):
+            for y in range(9):
+                if '*' in self.tablero_solucion[x][y] or '#' in self.tablero_solucion[x][y]:
+                    self.tablero_juego[x][y] = self.tablero_solucion[x][y][1]
+
+    def dibuja_numero(self):
+        """Dibuja la matriz del juego"""
+
+        for x in range(9):
+            for y in range(9):
+                if self.tablero_juego[x][y] = 0:
+                    pass
+                elif self.tablero_juego[x][y] != 0 and self.tablero_juego[x][y] in range(1,10):
+                    temp = self.fuente.render(self.tablero_juego[x][y], True, self.color)
+                    pos_coordenado = celdas_coord(x, y, 40, 200, 180)
+                    fondo.blit(temp, pos_coordenado[0], pos_coordenado[1])
+        pygame.display.update()
+
 
 class Rectangulo():
     """Rectangulos de PyGame, solo tienen las x,y de la esquina superior izquierda."""
@@ -55,7 +102,7 @@ class Imagen(Rectangulo):
     imagen = pygame.image.load(ruta)
 
     def indica_ruta(self):
-    	self.imagen = pygame.image.load(self.ruta)
+        self.imagen = pygame.image.load(self.ruta)
 
 
 class Bloques(Rectangulo):
@@ -230,7 +277,7 @@ texto = "Salir"
 # ____________________ FIN de botones del menu _______________
 
 
-#_____________________ Botones de elegir dificultad _________________
+# _____________________ Botones de elegir dificultad _________________
 
 # Entrenamiento
 entrenamiento = Boton()
@@ -313,11 +360,20 @@ fps = 30
 
 # _________________________ Inicio de Funciones ______________________________#
 
+# Funcion donde corre el juego del Sudoku
+# Carga el tablero
+def juego_sudoku(nombre, tablero):
+    # Carga los datos del tablero
+    nombre = cargar_tablero(nombre)
+
+    # Muestra los numeros en el tablero
+
+
 # Funcion para elegir dificultades
 def elegir_dificultad(datos_menu):
-	dificultad = True
-	global menu
-	cajas = [
+    dificultad = True
+    global menu
+    cajas = [
     pygame.Rect(entrenamiento.margen_x, entrenamiento.margen_y, entrenamiento.ancho, entrenamiento.alto),
     pygame.Rect(facil.margen_x, facil.margen_y, facil.ancho, facil.alto),
     pygame.Rect(dificil.margen_x, dificil.margen_y, dificil.ancho, dificil.alto),
@@ -325,96 +381,96 @@ def elegir_dificultad(datos_menu):
     pygame.Rect(menu.margen_x, menu.margen_y, menu.ancho, menu.alto)
         ]
 
-	while dificultad:
+    while dificultad:
 
         # Dibuja los botones del menu
-		fondo.blit(imagen_fondo, (0, 0))
-		fondo.blit(elegir_dificultadtxt.renderizado, (elegir_dificultadtxt.margen_x, elegir_dificultadtxt.margen_y))
-		dibuja_boton(entrenamiento)
-		dibuja_boton(facil)
-		dibuja_boton(dificil)
-		dibuja_boton(extremo)
-		dibuja_boton(menu)
+        fondo.blit(imagen_fondo, (0, 0))
+        fondo.blit(elegir_dificultadtxt.renderizado, (elegir_dificultadtxt.margen_x, elegir_dificultadtxt.margen_y))
+        dibuja_boton(entrenamiento)
+        dibuja_boton(facil)
+        dibuja_boton(dificil)
+        dibuja_boton(extremo)
+        dibuja_boton(menu)
 
-		for event in pygame.event.get():
+        for event in pygame.event.get():
             # Variables a verificar
-			mouse = pygame.mouse.get_pos()
-			click = pygame.mouse.get_pressed()
+            mouse = pygame.mouse.get_pos()
+            click = pygame.mouse.get_pressed()
             # Sale del juego
-			if event.type == pygame.QUIT:
-				cerrar()
+            if event.type == pygame.QUIT:
+                cerrar()
             # Reacciona si se pasa por encima de la opcion (FALTAN IMG HOVER)
-			if cajas[0].collidepoint(mouse[0], mouse[1]):
-				pygame.draw.rect(fondo, (azul), (entrenamiento.margen_x, entrenamiento.margen_y, entrenamiento.ancho, entrenamiento.alto))
+            if cajas[0].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, (azul), (entrenamiento.margen_x, entrenamiento.margen_y, entrenamiento.ancho, entrenamiento.alto))
                 #fondo.blit(opcion.imagen, (opcion.margen_x - 15, opcion.margen_y - 22))
-			if cajas[1].collidepoint(mouse[0], mouse[1]):
-				pygame.draw.rect(fondo, azul, (facil.margen_x, facil.margen_y, facil.ancho, facil.alto))
-			if cajas[2].collidepoint(mouse[0], mouse[1]):
-				pygame.draw.rect(fondo, azul, (dificil.margen_x, dificil.margen_y, dificil.ancho, dificil.alto))
-			if cajas[3].collidepoint(mouse[0], mouse[1]):
-				pygame.draw.rect(fondo, azul, (extremo.margen_x, extremo.margen_y, extremo.ancho, extremo.alto))
-			if cajas[4].collidepoint(mouse[0], mouse[1]):
-				pygame.draw.rect(fondo, azul, (menu.margen_x, menu.margen_y, menu.ancho, menu.alto))
+            if cajas[1].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, azul, (facil.margen_x, facil.margen_y, facil.ancho, facil.alto))
+            if cajas[2].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, azul, (dificil.margen_x, dificil.margen_y, dificil.ancho, dificil.alto))
+            if cajas[3].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, azul, (extremo.margen_x, extremo.margen_y, extremo.ancho, extremo.alto))
+            if cajas[4].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, azul, (menu.margen_x, menu.margen_y, menu.ancho, menu.alto))
 
-			if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
-				click_sonido.play()
-				elegir_tablero()
-				dificultad = False
-			if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
-				click_sonido.play()
-				lindo_gatito(gato, imagen_fondo, trabajando)
-				dificultad = False
-			if click[0] == 1 and cajas[2].collidepoint(mouse[0], mouse[1]):
-				click_sonido.play()
-				lindo_gatito(gato, imagen_fondo, trabajando)
-				dificultad = False
-			if click[0] == 1 and cajas[3].collidepoint(mouse[0], mouse[1]):
-				click_sonido.play()
-				lindo_gatito(gato, imagen_fondo, trabajando)
-				dificultad = False
-			if click[0] == 1 and cajas[4].collidepoint(mouse[0], mouse[1]):
-				dificultad = False
-				menu_juego(datos_menu[0], datos_menu[1], datos_menu[2], datos_menu[3])
+            if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                elegir_tablero()
+                dificultad = False
+            if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                lindo_gatito(gato, imagen_fondo, trabajando)
+                dificultad = False
+            if click[0] == 1 and cajas[2].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                lindo_gatito(gato, imagen_fondo, trabajando)
+                dificultad = False
+            if click[0] == 1 and cajas[3].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                lindo_gatito(gato, imagen_fondo, trabajando)
+                dificultad = False
+            if click[0] == 1 and cajas[4].collidepoint(mouse[0], mouse[1]):
+                dificultad = False
+                menu_juego(datos_menu[0], datos_menu[1], datos_menu[2], datos_menu[3])
 
-		pygame.display.update()
+        pygame.display.update()
 
 def elegir_tablero():
-	tablero = True
-	cajas = [
+    tablero = True
+    cajas = [
     pygame.Rect(t6x6.margen_x, t6x6.margen_y, t6x6.ancho, t6x6.alto),
     pygame.Rect(t9x9.margen_x, t9x9.margen_y, t9x9.ancho, t9x9.alto),
     ]
 
-	while tablero:
+    while tablero:
 
         # Dibuja los botones del menu
-		fondo.blit(imagen_fondo, (0, 0))
-		fondo.blit(elegir_tablerotxt.renderizado, (elegir_tablerotxt.margen_x, elegir_tablerotxt.margen_y))
-		dibuja_boton(t6x6)
-		dibuja_boton(t9x9)
-		
-		for event in pygame.event.get():
-            # Variables a verificar
-			mouse = pygame.mouse.get_pos()
-			click = pygame.mouse.get_pressed()
-            # Sale del juego
-			if event.type == pygame.QUIT:
-				cerrar()
-            # Reacciona si se pasa por encima de la opcion (FALTAN IMG HOVER)
-			if cajas[0].collidepoint(mouse[0], mouse[1]):
-				pygame.draw.rect(fondo, (azul), (t6x6.margen_x, t6x6.margen_y, t6x6.ancho, t6x6.alto))
-                #fondo.blit(opcion.imagen, (opcion.margen_x - 15, opcion.margen_y - 22))
-			if cajas[1].collidepoint(mouse[0], mouse[1]):
-				pygame.draw.rect(fondo, azul, (t9x9.margen_x, t9x9.margen_y, t9x9.ancho, t9x9.alto))
+        fondo.blit(imagen_fondo, (0, 0))
+        fondo.blit(elegir_tablerotxt.renderizado, (elegir_tablerotxt.margen_x, elegir_tablerotxt.margen_y))
+        dibuja_boton(t6x6)
+        dibuja_boton(t9x9)
 
-			if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
-				click_sonido.play()
-				tablero = False
-			if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
-				click_sonido.play()
-				dibuja_tablero(tablero9, negro)
-				tablero = False
-		pygame.display.update()
+        for event in pygame.event.get():
+            # Variables a verificar
+            mouse = pygame.mouse.get_pos()
+            click = pygame.mouse.get_pressed()
+            # Sale del juego
+            if event.type == pygame.QUIT:
+                cerrar()
+            # Reacciona si se pasa por encima de la opcion (FALTAN IMG HOVER)
+            if cajas[0].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, (azul), (t6x6.margen_x, t6x6.margen_y, t6x6.ancho, t6x6.alto))
+                #fondo.blit(opcion.imagen, (opcion.margen_x - 15, opcion.margen_y - 22))
+            if cajas[1].collidepoint(mouse[0], mouse[1]):
+                pygame.draw.rect(fondo, azul, (t9x9.margen_x, t9x9.margen_y, t9x9.ancho, t9x9.alto))
+
+            if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                tablero = False
+            if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
+                click_sonido.play()
+                dibuja_tablero(tablero9, negro)
+                tablero = False
+        pygame.display.update()
 
 
 
@@ -604,15 +660,6 @@ def input_texto(nombre, titulo):
     """texto = fuente.render(nombre, 1, negro)
     # Arreglar posicion
     fondo.blit(texto, (0, 0))"""
-
-
-# Carga los datos del tablero a un arreglo 2D
-def cargar_tablero(nombre):
-    """Carga los numeros del tablero del Sudoku de un archivo '.txt'."""
-    with open(nombre + ".txt", 'r') as archivo:
-        numeros_tablero = archivo.readlines()
-    archivo.closed
-    return numeros_tablero
 
 
 # Guarda la partida
