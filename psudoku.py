@@ -13,6 +13,11 @@ gris = (84, 84, 84)
 azul = (47, 86, 233)
 rojo = (255, 0, 0)
 
+# Fondo
+alto_fondo = 600
+ancho_fondo = 800
+tamano_fondo = (ancho_fondo, alto_fondo)
+
 # Inicializa PyGame
 pygame.init()
 
@@ -20,21 +25,34 @@ pygame.init()
 titulos = pygame.font.SysFont("monospace", 60, italic=True)
 palabras_menu = pygame.font.SysFont("monospace", 17)
 
+# Define la pantalla principal y el título de la pantalla
+fondo = pygame.display.set_mode(tamano_fondo)
+pygame.display.set_caption("Sudoku Chevere")
+imagen_fondo = pygame.image.load('fondo.png').convert()
+
+
+
 # Icono del programa
-icono = pygame.image.load('logo.png')
+icono = pygame.image.load('logo.png').convert()
 pygame.display.set_icon(icono)
 
 # ______________________________ Clases ______________________________________#
 
 
-class Imagen():
-    """Variables necesarias para cualquier imagen que se quiera dibujar."""
+class Rectangulo():
+    """Rectangulos de PyGame, solo tienen las x,y de la esquina superior izquierda."""
 
     margen_x = 0
     margen_y = 0
 
 
-class Bloques(Imagen):
+class Imagen(Rectangulo):
+    """Variables necesarias para cualquier imagen que se quiera dibujar."""
+
+    imagen = pygame.image.load('nueva_partida.png')
+
+
+class Bloques(Rectangulo):
     """Variables necesarias para crear los Rect en PyGame."""
 
     ancho = 0
@@ -73,10 +91,6 @@ class Texto(Imagen):
 
 
 # _____________________________ Valores iniciales ____________________________#
-# Fondo
-alto_fondo = 600
-ancho_fondo = 800
-tamano_fondo = (ancho_fondo, alto_fondo)
 
 # Tablero 9x9
 tablero9 = Tablero()
@@ -84,7 +98,7 @@ tablero9.ancho = 360
 tablero9.alto = tablero9.ancho
 tablero9.celda = int(tablero9.ancho / 9)
 tablero9.margen_x = 200
-tablero9.margen_y = 100
+tablero9.margen_y = 180
 tablero9.lineas = 9
 
 # Tablero 6x6
@@ -93,7 +107,7 @@ tablero6.ancho = 360
 tablero6.alto = tablero9.ancho
 tablero6.celda = int(tablero9.ancho / 6)
 tablero6.margen_x = 200
-tablero6.margen_y = 100
+tablero6.margen_y = 200
 tablero6.lineas = 6
 
 # Nombre del jugador
@@ -108,11 +122,17 @@ nombre.renderizar()
 # Texto de bienvenida
 bienvenida = Texto()
 bienvenida.texto = 'Bienvenido a Sudoku Chevere, por favor introduzca su nombre'
-bienvenida.fuente = titulos
+bienvenida.fuente = palabras_menu
 bienvenida.color = negro
 bienvenida.margen_x = 0
 bienvenida.margen_y = 0
 bienvenida.renderizar()
+
+# Titulo 'Sudoku'
+sudoku = Imagen()
+sudoku.margen_x = 150
+sudoku.margen_y = 10
+sudoku.imagen = pygame.image.load('sudoku.png')
 
 
 # ________Inicio Botones del Menu__________________________
@@ -121,7 +141,7 @@ nueva_Partida = Boton()
 nueva_Partida.ancho = 150
 nueva_Partida.alto = 30
 nueva_Partida.margen_x = 320
-nueva_Partida.margen_y = 115
+nueva_Partida.margen_y = 185
 nueva_Partida.imagen = pygame.image.load('nueva_partida.png')
 texto = "Nueva Partida"
 
@@ -130,7 +150,7 @@ cargar_partida = Boton()
 cargar_partida.ancho = 150
 cargar_partida.alto = 30
 cargar_partida.margen_x = 320
-cargar_partida.margen_y = 190
+cargar_partida.margen_y = 260
 cargar_partida.imagen = pygame.image.load('cargar_partida.png')
 texto = "Cargar Partida"
 
@@ -139,7 +159,7 @@ records = Boton()
 records.ancho = 150
 records.alto = 30
 records.margen_x = 320
-records.margen_y = 265
+records.margen_y = 335
 records.imagen = pygame.image.load('records.png')
 texto = "Records"
 
@@ -148,7 +168,7 @@ ayuda = Boton()
 ayuda.ancho = 150
 ayuda.alto = 30
 ayuda.margen_x = 320
-ayuda.margen_y = 340
+ayuda.margen_y = 410
 ayuda.imagen = pygame.image.load('reglas.png')
 texto = "Ayuda"
 
@@ -157,7 +177,7 @@ salir = Boton()
 salir.ancho = 150
 salir.alto = 30
 salir.margen_x = 320
-salir.margen_y = 415
+salir.margen_y = 485
 salir.imagen = pygame.image.load('salir.png')
 texto = "Salir"
 
@@ -169,17 +189,20 @@ fps = 30
 # _________________________ Inicio de Funciones ______________________________#
 # Crea los botones del menu
 def dibuja_boton(opcion):
-        pygame.draw.rect(fondo, (blanco), (opcion.margen_x, opcion.margen_y, opcion.ancho, opcion.alto))
-        fondo.blit(opcion.imagen,(opcion.margen_x - 15,opcion.margen_y - 22))
+    """Funcion que dibuja los botones del menu"""
+    pygame.draw.rect(fondo, (blanco), (opcion.margen_x, opcion.margen_y, opcion.ancho, opcion.alto))
+    fondo.blit(opcion.imagen, (opcion.margen_x - 15, opcion.margen_y - 22))
 
 
 # Dibuja el menú principal
-def menu_juego(fondo,blanco,azul,sudoku):
+def menu_juego(fondo, blanco, azul, sudoku):
+    """Funcion que muestra el menu en la pantalla."""
     menu = True
-
+    # Ciclo principal
     while menu:
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
+        # Almacena todas las opciones del menú en un arreglo
         cajas = [
     pygame.Rect(nueva_Partida.margen_x, nueva_Partida.margen_y, nueva_Partida.ancho, nueva_Partida.alto),
     pygame.Rect(cargar_partida.margen_x, cargar_partida.margen_y, cargar_partida.ancho, cargar_partida.alto),
@@ -188,10 +211,9 @@ def menu_juego(fondo,blanco,azul,sudoku):
     pygame.Rect(salir.margen_x, salir.margen_y, salir.ancho, salir.alto),
         ]
 
-
         # Dibuja los botones del menu
-        fondo.fill(blanco)
-        fondo.blit(sudoku, (ancho_fondo/2-100, 0))
+        fondo.blit(imagen_fondo, (0, 0))
+        fondo.blit(sudoku.imagen, (sudoku.margen_x, sudoku.margen_y))
         dibuja_boton(nueva_Partida)
         dibuja_boton(cargar_partida)
         dibuja_boton(records)
@@ -220,7 +242,7 @@ def menu_juego(fondo,blanco,azul,sudoku):
 
             if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                dibuja_tablero(tablero9, negro)
+                dibuja_tablero(tablero9, negro, imagen_fondo, sudoku)
                 menu = False
             if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
@@ -241,20 +263,18 @@ def menu_juego(fondo,blanco,azul,sudoku):
         pygame.display.update()
 
 # Limpia la pantalla
-def limpia_pantalla(fondo, color_fondo, color_letras):# Arreglar entrada al tener la clase texto
+def limpia_pantalla(fondo, imagen_fondo, sudoku):# Arreglar entrada al tener la clase texto
     """Limpia de la pantalla todos los graficos que ya no son necesarios."""
-    # Llena la pantalla de blanco
-    fondo.fill(blanco)
+    # Pone el fondo
+    fondo.blit(imagen_fondo, (0, 0))
     # Crea el titulo 'Sudoku'
-    sudoku = titulos.render("Sudoku", 2, negro)
-    fondo.blit(sudoku, (0, 0))# Arreglar la posicion
+    fondo.blit(sudoku.imagen, (sudoku.margen_x, sudoku.margen_y))
 
 
-def dibuja_tablero(tablero, color):
+def dibuja_tablero(tablero, color, imagen_fondo, sudoku):
     """Dibuja las lineas que delimitan las celdas y el tablero."""
     # Se limpia la pantalla (queda: fondo blanco, titulo)
-    limpia_pantalla(fondo, blanco, negro)
-    fondo.fill((255,255,255))
+    limpia_pantalla(fondo, imagen_fondo, sudoku)
     # Variables de verificación
     x_veri = -1
     y_veri = -1
@@ -319,7 +339,7 @@ def input_texto(nombre, titulo):
     """NO FUNCIONA."""
     ingreso = True
     # Crea el fondo
-    fondo.fill(blanco)
+    fondo.blit(imagen_fondo, (0, 0))
     fondo.blit(titulo.renderizado, (titulo.margen_x, titulo.margen_y))
     pygame.display.update()
 
@@ -343,7 +363,7 @@ def input_texto(nombre, titulo):
                 pass
 
         # Escribe el nombre ingresado en pantalla
-        fondo.fill(blanco)
+        fondo.blit(imagen_fondo, (0, 0))
         fondo.blit(titulo.renderizado, (titulo.margen_x, titulo.margen_y))
         nombre.renderizar()
         fondo.blit(nombre.renderizado, (nombre.margen_x, nombre.margen_y))
@@ -385,17 +405,8 @@ click_sonido = pygame.mixer.Sound('click.wav')
 #                           Inicio del programa                               #
 # ____________________________________________________________________________#
 
-# Crea la pantalla
-fondo = pygame.display.set_mode(tamano_fondo)
-pygame.display.set_caption('Sudoku Chevere')
-limpia_pantalla(fondo, blanco, negro)
-
-
 # ------ Ciclo principal del programa --------------
-fondo.fill(blanco)
-# Crea el titulo 'Sudoku'
-sudoku = titulos.render("Sudoku", 2, negro)
-fondo.blit(sudoku, (ancho_fondo / (2 - 100), 0))# Arreglar la posicion
+fondo.blit(imagen_fondo, (0, 0))
 input_texto(nombre, bienvenida)
 menu_juego(fondo, blanco, azul, sudoku)
 # Dibuja el tablero
