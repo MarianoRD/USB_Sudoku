@@ -142,6 +142,15 @@ elegir_dificultadtxt.margen_x = 200
 elegir_dificultadtxt.margen_y = 10
 elegir_dificultadtxt.renderizar()
 
+# Texto de Elegir Tablero
+elegir_tablerotxt = Texto()
+elegir_tablerotxt.texto = 'Elegir Tablero'
+elegir_tablerotxt.fuente = titulos
+elegir_tablerotxt.color = negro
+elegir_tablerotxt.margen_x = 200
+elegir_tablerotxt.margen_y = 10
+elegir_tablerotxt.renderizar()
+
 # Titulo 'Sudoku'
 sudoku = Imagen()
 sudoku.margen_x = 150
@@ -251,12 +260,34 @@ menu = Boton()
 menu.ancho = 150
 menu.alto = 30
 menu.margen_x = 320
-menu.margen_y = 410
+menu.margen_y = 485
 menu.ruta = os.path.join('imagenes', 'menu_principal.png')
 menu.indica_ruta()
 texto = "Menu"
 
 #_____________________  FIN de Botones de elegir dificultad _________________
+
+
+#_____________________ Botones para elegir tablero __________________________
+# Tablero 6x6
+t6x6 = Boton()
+t6x6.ancho = 150
+t6x6.alto = 30
+t6x6.margen_x = 130
+t6x6.margen_y = 150
+t6x6.ruta = os.path.join('imagenes', '6x6.png')
+t6x6.indica_ruta()
+texto = "6x6"
+
+#Tablero 9x9
+t9x9 = Boton()
+t9x9.ancho = 150
+t9x9.alto = 30
+t9x9.margen_x = 570
+t9x9.margen_y = 150
+t9x9.ruta = os.path.join('imagenes', '9x9.png')
+t9x9.indica_ruta()
+texto = "t9x9"
 
 
 # Cuadros por segundos a los que se refresca la pantalla
@@ -310,7 +341,7 @@ def elegir_dificultad(datos_menu):
 
 			if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
 				click_sonido.play()
-				#elegir_dificultad()
+				elegir_tablero()
 				dificultad = False
 			if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
 				click_sonido.play()
@@ -328,10 +359,44 @@ def elegir_dificultad(datos_menu):
 				dificultad = False
 				menu_juego(datos_menu[0], datos_menu[1], datos_menu[2], datos_menu[3])
 
+		pygame.display.update()
 
-	
+def elegir_tablero():
+	tablero = True
+	cajas = [
+    pygame.Rect(t6x6.margen_x, t6x6.margen_y, t6x6.ancho, t6x6.alto),
+    pygame.Rect(t9x9.margen_x, t9x9.margen_y, t9x9.ancho, t9x9.alto),
+    ]
 
+	while tablero:
 
+        # Dibuja los botones del menu
+		fondo.blit(imagen_fondo, (0, 0))
+		fondo.blit(elegir_tablerotxt.renderizado, (elegir_tablerotxt.margen_x, elegir_tablerotxt.margen_y))
+		dibuja_boton(t6x6)
+		dibuja_boton(t9x9)
+		
+		for event in pygame.event.get():
+            # Variables a verificar
+			mouse = pygame.mouse.get_pos()
+			click = pygame.mouse.get_pressed()
+            # Sale del juego
+			if event.type == pygame.QUIT:
+				cerrar()
+            # Reacciona si se pasa por encima de la opcion (FALTAN IMG HOVER)
+			if cajas[0].collidepoint(mouse[0], mouse[1]):
+				pygame.draw.rect(fondo, (azul), (t6x6.margen_x, t6x6.margen_y, t6x6.ancho, t6x6.alto))
+                #fondo.blit(opcion.imagen, (opcion.margen_x - 15, opcion.margen_y - 22))
+			if cajas[1].collidepoint(mouse[0], mouse[1]):
+				pygame.draw.rect(fondo, azul, (t9x9.margen_x, t9x9.margen_y, t9x9.ancho, t9x9.alto))
+
+			if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
+				click_sonido.play()
+				tablero = False
+			if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
+				click_sonido.play()
+				dibuja_tablero(tablero9, negro)
+				tablero = False
 		pygame.display.update()
 
 
@@ -347,7 +412,6 @@ def dibuja_boton(opcion):
 def menu_juego(fondo, blanco, azul, sudoku):
     """Funcion que muestra el menu en la pantalla."""
     datos_menu = (fondo,blanco,azul,sudoku)
-    print(datos_menu)
     menu = True
     # Ciclo principal
     while menu:
