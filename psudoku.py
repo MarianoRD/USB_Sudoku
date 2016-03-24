@@ -93,7 +93,7 @@ class Juego():
         for x in range(9):
             for y in range(9):
                 if '*' in self.tablero_solucion[x][y] or '#' in self.tablero_solucion[x][y]:
-                    self.tablero_juego[x][y] = self.tablero_solucion[x][y][1]
+                    self.tablero_juego[x][y] = self.tablero_solucion[x][y]
         return self.tablero_juego
 
     def dibuja_numero(self, tablero):
@@ -101,9 +101,14 @@ class Juego():
         for x in range(self.modo):
             for y in range(self.modo):
                 if self.tablero_juego[x][y] == '0':
-                    print(self.tablero_juego[x][y])
                     pass
-                elif self.tablero_juego[x][y] != '0':
+                elif '*' in self.tablero_juego[x][y]:
+                    temp = self.fuente.render(self.tablero_juego[x][y][1], True, self.color)
+                    pos_coordenado = celdas_coord(x, y, tablero.celda, tablero.margen_x, tablero.margen_y)
+                    # Desplazamiento de los numeros
+                    pos_coordenado = (pos_coordenado[0]+10, pos_coordenado[1]+5)
+                    fondo.blit(temp, pos_coordenado)
+                elif self.tablero_juego[x][y] in '123456789':
                     temp = self.fuente.render(self.tablero_juego[x][y], True, self.color)
                     pos_coordenado = celdas_coord(x, y, tablero.celda, tablero.margen_x, tablero.margen_y)
                     # Desplazamiento de los numeros
@@ -725,6 +730,7 @@ def main(tablero):
     # Inicial
     dibuja_tablero(tablero, negro, imagen_fondo, sudoku)
     partida.dibuja_numero(tablero)
+
 
 
 
