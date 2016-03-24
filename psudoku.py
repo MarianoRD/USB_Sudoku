@@ -40,31 +40,50 @@ pygame.display.set_icon(icono)
 
 # ______________________________ Clases ______________________________________#
 
-class Juego9x9()
+class Juego():
     """Donde se corre el juego."""
 
-    tablero_solucion = [[0 for x in range(9)] for y in range(9)]
-    tablero_juego = [[0 for x in range(9)] for y in range(9)]
+    tablero_solucion = []
+    tablero_juego = [['0'for x in range(9)] for y in range(9)]
     fuente = palabras_menu
     color = negro
     tiempo = 0
     puntaje = 0
     errores = 0
     jugador = ''
+    modo = 0
     archivo = os.path.join('tableros', '')
 
     def __init__(self, nombre_archivo):
-        self.archivo = archivo = os.path.join('tableros', nombre_archivo+'.txt')
+        self.archivo = nombre_archivo
+        self.tablero_solucion = self.cargar_tablero()
+        self.tablero_juego = self.copia_numeros()
+        # QUITAR
+        print("Tablero Solucion")
+        self.imprimir(self.tablero_solucion)
+        print("Tablero Juego")
+        self.imprimir(self.tablero_juego)
 
-    # Carga los datos del tablero a un arreglo 2D
     def cargar_tablero(self):
         """Carga los numeros del tablero del Sudoku de un archivo '.txt'."""
-        with open(self.archivo + ".txt", 'r') as f:
-            temp = f.readlines()
-            for i in range(6):
-                for j in range(6):
-                    self.tablero_solucion[i][j] = temp[i][j]
-        print(self.tablero_solucion)
+        x = 0
+        y = 0
+        fila = []
+        numeros_tablero = []
+        temp = 'lol'
+        with open(self.archivo, 'r') as archivo:
+            while temp != '':
+                temp = archivo.readline()
+                for i in range(len(temp)):
+                    if temp[i] in '123456789' and temp[i - 1] != '*':
+                        fila.append(temp[i])
+                    if temp[i] == '*':
+                        fila.append(temp[i] + temp[i + 1])
+                numeros_tablero.append(fila)
+                fila = []
+            numeros_tablero.remove(numeros_tablero[9])
+            archivo.closed
+            return numeros_tablero
 
     def copia_numeros(self):
         """Crea la matriz a ser utilizada en el juego"""
@@ -73,20 +92,25 @@ class Juego9x9()
             for y in range(9):
                 if '*' in self.tablero_solucion[x][y] or '#' in self.tablero_solucion[x][y]:
                     self.tablero_juego[x][y] = self.tablero_solucion[x][y][1]
-
+        return self.tablero_juego
     def dibuja_numero(self):
         """Dibuja la matriz del juego"""
 
-        for x in range(9):
-            for y in range(9):
-                if self.tablero_juego[x][y] = 0:
+        for x in range(self.modo):
+            for y in range(self.modo):
+                if self.tablero_juego[x][y] == 0:
                     pass
                 elif self.tablero_juego[x][y] != 0 and self.tablero_juego[x][y] in range(1,10):
                     temp = self.fuente.render(self.tablero_juego[x][y], True, self.color)
-                    pos_coordenado = celdas_coord(x, y, 40, 200, 180)
+                    #pos_coordenado = celdas_coord(x, y, 40, 200, 180)
                     fondo.blit(temp, pos_coordenado[0], pos_coordenado[1])
         pygame.display.update()
 
+    def imprimir(self, mat):
+        print ("   "," ".join([str(x) for x in range(len(mat))]))
+        print ("_"," ".join(['_' for x in range(len(mat)+1)]))
+        for i,x in enumerate(mat):
+            print (i,'|'," ".join(x))
 
 class Rectangulo():
     """Rectangulos de PyGame, solo tienen las x,y de la esquina superior izquierda."""
@@ -125,19 +149,20 @@ class Boton(Imagen):
     texto = ""
 
 
-class Texto(Imagen):
-    """Variables para blitear imagenes."""
-
-    texto = ''
-    fuente = palabras_menu
-    antialias = True
-    color = negro
-    renderizado = None
 
     def renderizar(self):
         """Renderiza el texto, para poder ser mostrado en pantalla."""
         self.renderizado = self.fuente.render(self.texto, self.antialias, self.color)
         return None
+
+
+class Texto(Boton):
+    """Variables para blitear imagenes."""
+
+    fuente = palabras_menu
+    antialias = True
+    color = negro
+    renderizado = None
 
 # ___________________________ Fin Clases _____________________________________#
 
@@ -161,6 +186,15 @@ trabajando.margen_x = 30
 trabajando.margen_y = 500
 trabajando.renderizar()
 # ###################################################
+
+# Partida
+partida = Juego('sudoku.txt')
+partida.jugador = ''
+partida.fuente = palabras_menu
+partida.color = negro
+partida.modo = 9
+#partida.inicial('sudoku.txt')
+
 # Tablero 9x9
 tablero9 = Tablero()
 tablero9.ancho = 360
@@ -465,9 +499,11 @@ def elegir_tablero():
 
             if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
+                partida.modo = 6
                 tablero = False
             if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
+                partida.modo = 9
                 dibuja_tablero(tablero9, negro)
                 tablero = False
         pygame.display.update()
@@ -698,6 +734,7 @@ click_sonido = pygame.mixer.Sound('click.wav')
 # ------ Ciclo principal del programa --------------
 fondo.blit(imagen_fondo, (0, 0))
 input_texto(nombre, bienvenida)
+partida.jugador = nombre.texto
 menu_juego(fondo, blanco, azul, sudoku)
 # Dibuja el tablero
 while True:
