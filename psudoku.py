@@ -13,6 +13,7 @@ negro = (0, 0, 0)
 gris = (84, 84, 84)
 azul = (47, 86, 233)
 rojo = (255, 0, 0)
+pistas = (165, 165, 204)
 
 # Fondo
 alto_fondo = 600
@@ -104,13 +105,19 @@ class Juego():
                     pass
                 elif '*' in self.tablero_juego[x][y]:
                     temp = self.fuente.render(self.tablero_juego[x][y][1], True, self.color)
-                    pos_coordenado = celdas_coord(x, y, tablero.celda, tablero.margen_x, tablero.margen_y)
+                    pos_matriz = (x, y)
+                    pos_coordenado = celdas_coord(pos_matriz, tablero)
+                    # Crea el resaltado en las pistas
+                    resaltado = pygame.Surface((tablero.celda, tablero.celda))
+                    resaltado.fill(pistas)
+                    resaltado.set_alpha(100)
+                    fondo.blit(resaltado, pos_coordenado)
                     # Desplazamiento de los numeros
                     pos_coordenado = (pos_coordenado[0]+10, pos_coordenado[1]+5)
                     fondo.blit(temp, pos_coordenado)
                 elif self.tablero_juego[x][y] in '123456789':
                     temp = self.fuente.render(self.tablero_juego[x][y], True, self.color)
-                    pos_coordenado = celdas_coord(x, y, tablero.celda, tablero.margen_x, tablero.margen_y)
+                    pos_coordenado = celdas_coord(tablero)
                     # Desplazamiento de los numeros
                     pos_coordenado = (pos_coordenado[0]+10, pos_coordenado[1]+5)
                     fondo.blit(temp, pos_coordenado)
@@ -607,8 +614,6 @@ def limpia_pantalla(fondo, imagen_fondo, sudoku):# Arreglar entrada al tener la 
 
 def dibuja_tablero(tablero, color, imagen_fondo, sudoku):
     """Dibuja las lineas que delimitan las celdas y el tablero."""
-    # Se limpia la pantalla (queda: fondo blanco, titulo)
-    limpia_pantalla(fondo, imagen_fondo, sudoku)
     # Variables de verificación
     x_veri = -1
     y_veri = -1
@@ -650,25 +655,26 @@ def dibuja_tablero(tablero, color, imagen_fondo, sudoku):
                     (tablero.margen_x, i + tablero.margen_y),
                     (tablero.ancho + tablero.margen_x, i + tablero.margen_y), 3)
 
-    return None
+    return 
 
 
 # mousex, mousey = pygame.mouse.get_pos() necesario para que funcione
-def celdas_coord(x, y, celda, margenx, margeny):
+def celdas_coord(pos, tablero):
     """Pasa del sistema del juego al sistema coordenado celdas."""
-    izquierda = (x * celda) + margenx
-    arriba = (y * celda) + margeny
+    izquierda = (pos[0] * tablero.celda) + tablero.margen_x
+    arriba = (pos[1] * tablero.celda) + tablero.margen_y
     return (izquierda, arriba)
 
 
 # mousex, mousey = pygame.mouse.get_pos() Necesario para que funcione
-def coord_celdas(xmouse, ymouse, celda, margenx, margeny):
+def coord_celdas(mouse, tablero):
     """Pasa del sistema coordenado celdas, al sistema coordenado del juego."""
     for x in range(9):
         for y in range(9):
-            izquierda, arriba = celdas_coord(x, y, celda, margenx, margeny)
-            caja = pygame.Rect(izquierda, arriba, celda, celda)
-            if caja.collidepoint(xmouse, ymouse):
+            pos = (x, y)
+            izquierda, arriba = celdas_coord(pos, tablero)
+            caja = pygame.Rect(izquierda, arriba, tablero.celda, tablero.celda)
+            if caja.collidepoint(mouse[0], mouse[1]):
                 return (x, y)
     return (None, None)
 
@@ -727,9 +733,28 @@ def guardar_partida(nombre, numeros_tablero):
 def main(tablero):
     global partida, negro, imagen_fondo, sudoku
 
-    # Inicial
-    dibuja_tablero(tablero, negro, imagen_fondo, sudoku)
+    # INICIAL
+    # Se limpia la pantalla (queda: fondo blanco, titulo)
+    limpia_pantalla(fondo, imagen_fondo, sudoku)
     partida.dibuja_numero(tablero)
+    dibuja_tablero(tablero, negro, imagen_fondo, sudoku)
+    pygame.display.update()
+
+   # Ciclo principal
+    while True:
+        for evento in pygame.event.get():
+            # Variables a verificar
+            mouse = pygame.mouse.get_pos()
+            click = pygame.mouse.get_pressed()
+            mouse_celdas = coord_celdas(mouse, tablero)
+            if evento.type == QUIT:
+                cerrar()
+
+        # Se actualiza la pantalla (queda: fondo blanco, titulo)
+        # Dibujar numero cambiado
+        #partida.dibuja_numero(tablero)
+        dibuja_tablero(tablero, negro, imagen_fondo, sudoku)
+        pygame.display.update((tablero.margen_x, tablero.margen_y, tablero.ancho, tablero.ancho))
 
 
 
