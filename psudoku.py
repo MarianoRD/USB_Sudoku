@@ -25,6 +25,7 @@ pygame.init()
 # Fuentes
 titulos = pygame.font.SysFont("monospace", 60, italic=True)
 palabras_menu = pygame.font.SysFont("monospace", 17)
+numeros = pygame.font.SysFont("monospace", 30, bold=True)
 
 # Define la pantalla principal y el título de la pantalla
 fondo = pygame.display.set_mode(tamano_fondo)
@@ -32,13 +33,16 @@ pygame.display.set_caption("Sudoku Chevere")
 ruta_imagen_fondo = os.path.join('imagenes', 'fondo.png')
 imagen_fondo = pygame.image.load(ruta_imagen_fondo).convert()
 
-
 # Icono del programa
 ruta_imagen_logo = os.path.join('imagenes', 'logo.png')
 icono = pygame.image.load(ruta_imagen_logo).convert()
 pygame.display.set_icon(icono)
 
+# Cuadros por segundos a los que se refresca la pantalla
+fps = 30
+
 # ______________________________ Clases ______________________________________#
+
 
 class Juego():
     """Donde se corre el juego."""
@@ -53,9 +57,10 @@ class Juego():
     jugador = ''
     modo = 0
     archivo = os.path.join('tableros', '')
+    dificultad = ''
 
     def __init__(self, nombre_archivo):
-        self.archivo = nombre_archivo
+        self.archivo = os.path.join('tableros', nombre_archivo)
         self.tablero_solucion = self.cargar_tablero()
         self.tablero_juego = self.copia_numeros()
         # QUITAR
@@ -66,8 +71,6 @@ class Juego():
 
     def cargar_tablero(self):
         """Carga los numeros del tablero del Sudoku de un archivo '.txt'."""
-        x = 0
-        y = 0
         fila = []
         numeros_tablero = []
         temp = 'lol'
@@ -86,24 +89,26 @@ class Juego():
             return numeros_tablero
 
     def copia_numeros(self):
-        """Crea la matriz a ser utilizada en el juego"""
-
+        """Crea la matriz a ser utilizada en el juego."""
         for x in range(9):
             for y in range(9):
                 if '*' in self.tablero_solucion[x][y] or '#' in self.tablero_solucion[x][y]:
                     self.tablero_juego[x][y] = self.tablero_solucion[x][y][1]
         return self.tablero_juego
-    def dibuja_numero(self):
-        """Dibuja la matriz del juego"""
 
+    def dibuja_numero(self, tablero):
+        """Dibuja la matriz del juego en pantalla."""
         for x in range(self.modo):
             for y in range(self.modo):
-                if self.tablero_juego[x][y] == 0:
+                if self.tablero_juego[x][y] == '0':
+                    print(self.tablero_juego[x][y])
                     pass
-                elif self.tablero_juego[x][y] != 0 and self.tablero_juego[x][y] in range(1,10):
+                elif self.tablero_juego[x][y] != '0':
                     temp = self.fuente.render(self.tablero_juego[x][y], True, self.color)
-                    #pos_coordenado = celdas_coord(x, y, 40, 200, 180)
-                    fondo.blit(temp, pos_coordenado[0], pos_coordenado[1])
+                    pos_coordenado = celdas_coord(x, y, tablero.celda, tablero.margen_x, tablero.margen_y)
+                    # Desplazamiento de los numeros
+                    pos_coordenado = (pos_coordenado[0]+10, pos_coordenado[1]+5)
+                    fondo.blit(temp, pos_coordenado)
         pygame.display.update()
 
     def imprimir(self, mat):
@@ -111,6 +116,7 @@ class Juego():
         print ("_"," ".join(['_' for x in range(len(mat)+1)]))
         for i,x in enumerate(mat):
             print (i,'|'," ".join(x))
+
 
 class Rectangulo():
     """Rectangulos de PyGame, solo tienen las x,y de la esquina superior izquierda."""
@@ -124,9 +130,12 @@ class Imagen(Rectangulo):
 
     ruta = os.path.join('imagenes', 'nueva_partida.png')
     imagen = pygame.image.load(ruta)
+    imagen.set_colorkey(negro)
 
     def indica_ruta(self):
         self.imagen = pygame.image.load(self.ruta)
+        self.imagen.convert()
+        self.imagen.set_colorkey(blanco)
 
 
 class Bloques(Rectangulo):
@@ -147,8 +156,6 @@ class Boton(Imagen):
     """Clase hija de Bloques, para cargar imagenes."""
 
     texto = ""
-
-
 
     def renderizar(self):
         """Renderiza el texto, para poder ser mostrado en pantalla."""
@@ -190,7 +197,7 @@ trabajando.renderizar()
 # Partida
 partida = Juego('sudoku.txt')
 partida.jugador = ''
-partida.fuente = palabras_menu
+partida.fuente = numeros
 partida.color = negro
 partida.modo = 9
 #partida.inicial('sudoku.txt')
@@ -209,27 +216,30 @@ tablero6 = Tablero()
 tablero6.ancho = 360
 tablero6.alto = tablero9.ancho
 tablero6.celda = int(tablero9.ancho / 6)
-tablero6.margen_x = 200
+tablero6.margen_x = 150
 tablero6.margen_y = 200
 tablero6.lineas = 6
 
 # Nombre del jugador
 nombre = Texto()
 nombre.texto = ''
-nombre.fuente = palabras_menu
+nombre.fuente = titulos
 nombre.color = negro
-nombre.margen_x = 0
-nombre.margen_y = 200
+nombre.margen_x = 230
+nombre.margen_y = 250
 nombre.renderizar()
 
+# ____________________ INICIO IMAGENES _______________________________________
+
 # Texto de bienvenida
-bienvenida = Texto()
-bienvenida.texto = 'Bienvenido a Sudoku Chevere, por favor introduzca su nombre'
-bienvenida.fuente = palabras_menu
-bienvenida.color = negro
-bienvenida.margen_x = 0
-bienvenida.margen_y = 0
-bienvenida.renderizar()
+bienvenida = Imagen()
+bienvenida.ancho = 520
+bienvenida.alto = 100
+bienvenida.margen_x = 140
+bienvenida.margen_y = 100
+bienvenida.ruta = os.path.join('imagenes', 'introduzca_nombre.png')
+bienvenida.indica_ruta()
+texto = "introduzca_nombre"
 
 # Texto de Elegir Dificultades
 elegir_dificultadtxt = Texto()
@@ -387,9 +397,7 @@ t9x9.ruta = os.path.join('imagenes', '9x9.png')
 t9x9.indica_ruta()
 texto = "t9x9"
 
-
-# Cuadros por segundos a los que se refresca la pantalla
-fps = 30
+# ____________________ FIN IMAGENES _______________________________________
 
 
 # _________________________ Inicio de Funciones ______________________________#
@@ -448,7 +456,7 @@ def elegir_dificultad(datos_menu):
 
             if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                elegir_tablero()
+                elegir_tablero(partida)
                 dificultad = False
             if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
@@ -468,7 +476,7 @@ def elegir_dificultad(datos_menu):
 
         pygame.display.update()
 
-def elegir_tablero():
+def elegir_tablero(partida):
     tablero = True
     cajas = [
     pygame.Rect(t6x6.margen_x, t6x6.margen_y, t6x6.ancho, t6x6.alto),
@@ -493,18 +501,16 @@ def elegir_tablero():
             # Reacciona si se pasa por encima de la opcion (FALTAN IMG HOVER)
             if cajas[0].collidepoint(mouse[0], mouse[1]):
                 pygame.draw.rect(fondo, (azul), (t6x6.margen_x, t6x6.margen_y, t6x6.ancho, t6x6.alto))
-                #fondo.blit(opcion.imagen, (opcion.margen_x - 15, opcion.margen_y - 22))
             if cajas[1].collidepoint(mouse[0], mouse[1]):
                 pygame.draw.rect(fondo, azul, (t9x9.margen_x, t9x9.margen_y, t9x9.ancho, t9x9.alto))
-
+            # Acciona si le dan click a cualquier botón
             if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                partida.modo = 6
+                main(tablero6)
                 tablero = False
             if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                partida.modo = 9
-                dibuja_tablero(tablero9, negro)
+                main(tablero9)
                 tablero = False
         pygame.display.update()
 
@@ -513,7 +519,6 @@ def elegir_tablero():
 # Crea los botones del menu
 def dibuja_boton(opcion):
     """Funcion que dibuja los botones del menu"""
-    pygame.draw.rect(fondo, (blanco), (opcion.margen_x, opcion.margen_y, opcion.ancho, opcion.alto))
     fondo.blit(opcion.imagen, (opcion.margen_x - 15, opcion.margen_y - 22))
 
 
@@ -618,15 +623,27 @@ def dibuja_tablero(tablero, color, imagen_fondo, sudoku):
     assert(x_veri == tablero.lineas), "Faltan líneas horizontales"
     assert(y_veri == tablero.lineas), "Faltan líneas verticales"
     # Resalta las regiones del tablero
-    for i in range(0, 400, (3 * tablero.celda)):
+    if tablero.lineas == 9:
+        for i in range(0, 400, (3 * tablero.celda)):
+            # Horizontales
+            pygame.draw.line(fondo, color,
+                            (i + tablero.margen_x, tablero.margen_y),
+                            (i + tablero.margen_x, 360 + tablero.margen_y), 3)
+            # Verticales
+            pygame.draw.line(fondo, color,
+                    (tablero.margen_x, i + tablero.margen_y),
+                    (tablero.ancho + tablero.margen_x, i + tablero.margen_y), 3)
+    elif tablero.lineas == 6:
         # Horizontales
-        pygame.draw.line(fondo, color,
-                        (i + tablero.margen_x, tablero.margen_y),
-                        (i + tablero.margen_x, 360 + tablero.margen_y), 3)
-        # Verticales
-        pygame.draw.line(fondo, color,
-                (tablero.margen_x, i + tablero.margen_y),
-                (tablero.ancho + tablero.margen_x, i + tablero.margen_y), 3)
+        for i in range(0, 400, (3 * tablero.celda)):
+            pygame.draw.line(fondo, color,
+                            (i + tablero.margen_x, tablero.margen_y),
+                            (i + tablero.margen_x, 360 + tablero.margen_y), 3)
+            # Verticales
+        for i in range(0, 400, (2 * tablero.celda)):
+            pygame.draw.line(fondo, color,
+                    (tablero.margen_x, i + tablero.margen_y),
+                    (tablero.ancho + tablero.margen_x, i + tablero.margen_y), 3)
 
     return None
 
@@ -647,7 +664,6 @@ def coord_celdas(xmouse, ymouse, celda, margenx, margeny):
             izquierda, arriba = celdas_coord(x, y, celda, margenx, margeny)
             caja = pygame.Rect(izquierda, arriba, celda, celda)
             if caja.collidepoint(xmouse, ymouse):
-                print (x, y)
                 return (x, y)
     return (None, None)
 
@@ -660,11 +676,11 @@ def cerrar():
 
 # Permite el ingreso de texto
 def input_texto(nombre, titulo):
-    """NO FUNCIONA."""
+    """Permite el ingreso de texto desde el GUI"""
     ingreso = True
     # Crea el fondo
     fondo.blit(imagen_fondo, (0, 0))
-    fondo.blit(titulo.renderizado, (titulo.margen_x, titulo.margen_y))
+    dibuja_boton(bienvenida)
     pygame.display.update()
 
     while ingreso:
@@ -688,14 +704,10 @@ def input_texto(nombre, titulo):
 
         # Escribe el nombre ingresado en pantalla
         fondo.blit(imagen_fondo, (0, 0))
-        fondo.blit(titulo.renderizado, (titulo.margen_x, titulo.margen_y))
+        dibuja_boton(bienvenida)
         nombre.renderizar()
         fondo.blit(nombre.renderizado, (nombre.margen_x, nombre.margen_y))
         pygame.display.update()
-
-    """texto = fuente.render(nombre, 1, negro)
-    # Arreglar posicion
-    fondo.blit(texto, (0, 0))"""
 
 
 # Guarda la partida
@@ -706,8 +718,18 @@ def guardar_partida(nombre, numeros_tablero):
             archivo.write(linea)
     archivo.closed
 
+# Donde se corre el juego ahora si si si
+def main(tablero):
+    global partida, negro, imagen_fondo, sudoku
 
-#########################################################
+    # Inicial
+    dibuja_tablero(tablero, negro, imagen_fondo, sudoku)
+    partida.dibuja_numero(tablero)
+
+
+
+
+# ########################################################
 def lindo_gatito(gato, imagen_fondo, trabajando):
     """Dibuja un lindo gatito."""
     fondo.blit(imagen_fondo, (0, 0))
