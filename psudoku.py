@@ -99,8 +99,8 @@ class Juego():
 
     def dibuja_numero(self, tablero):
         """Dibuja la matriz del juego en pantalla."""
-        for x in range(self.modo):
-            for y in range(self.modo):
+        for y in range(self.modo):
+            for x in range(self.modo):
                 if self.tablero_juego[x][y] == '0':
                     pass
                 elif '*' in self.tablero_juego[x][y]:
@@ -739,7 +739,6 @@ def main(tablero):
     partida.dibuja_numero(tablero)
     dibuja_tablero(tablero, negro, imagen_fondo, sudoku)
     pygame.display.update()
-
    # Ciclo principal
     while True:
         for evento in pygame.event.get():
@@ -749,7 +748,17 @@ def main(tablero):
             mouse_celdas = coord_celdas(mouse, tablero)
             if evento.type == QUIT:
                 cerrar()
-
+            for i in range(9):
+                for j in range(9):
+                    if mouse_celdas == (i,j) and not('*' in partida.tablero_juego[i][j]):
+                        if click[0] == 1:
+                            print(i,j)
+                            pygame.draw.rect(fondo, azul, (mouse[0], mouse[1], tablero.celda, tablero.celda))
+                            if evento.unicode.isnumeric() and evento.unicode != '0':
+                                tablero_juego[i][j] = evento.unicode
+                            else:
+                                pass
+                            pygame.display.update()
         # Se actualiza la pantalla (queda: fondo blanco, titulo)
         # Dibujar numero cambiado
         #partida.dibuja_numero(tablero)
