@@ -1,3 +1,4 @@
+
 """Un super Sudoku que no funciona."""
 
 # Librerias
@@ -26,9 +27,10 @@ pygame.init()
 # Fuentes
 titulos = pygame.font.SysFont("monospace", 60, italic=True)
 palabras_menu = pygame.font.SysFont("monospace", 17)
-numeros = pygame.font.SysFont("monospace", 30, bold=True)
+numeros_sudoku = pygame.font.SysFont("monospace", 30, bold=True)
+numeros = pygame.font.SysFont("fuentes/numeros.ttf", 25)
 
-# Define la pantalla principal y el título de la pantalla
+# Define la pantalla principal y el titulo de la pantalla
 fondo = pygame.display.set_mode(tamano_fondo)
 pygame.display.set_caption("Sudoku Chevere")
 ruta_imagen_fondo = os.path.join('imagenes', 'fondo.png')
@@ -52,7 +54,7 @@ class Juego():
     tablero_juego = [['0'for x in range(9)] for y in range(9)]
     fuente = palabras_menu
     color = negro
-    tiempo = 0
+    tiempo = [0,0]
     puntaje = 0
     errores = 0
     jugador = ''
@@ -99,13 +101,13 @@ class Juego():
 
     def dibuja_numero(self, tablero):
         """Dibuja la matriz del juego en pantalla."""
-        for y in range(self.modo):
-            for x in range(self.modo):
+        for x in range(self.modo):
+            for y in range(self.modo):
                 if self.tablero_juego[x][y] == '0':
                     pass
                 elif '*' in self.tablero_juego[x][y]:
                     temp = self.fuente.render(self.tablero_juego[x][y][1], True, self.color)
-                    pos_matriz = (x, y)
+                    pos_matriz = (y, x)
                     pos_coordenado = celdas_coord(pos_matriz, tablero)
                     # Crea el resaltado en las pistas
                     resaltado = pygame.Surface((tablero.celda, tablero.celda))
@@ -117,7 +119,8 @@ class Juego():
                     fondo.blit(temp, pos_coordenado)
                 elif self.tablero_juego[x][y] in '123456789':
                     temp = self.fuente.render(self.tablero_juego[x][y], True, self.color)
-                    pos_coordenado = celdas_coord(tablero)
+                    pos = (y, x)
+                    pos_coordenado = celdas_coord(pos, tablero)
                     # Desplazamiento de los numeros
                     pos_coordenado = (pos_coordenado[0]+10, pos_coordenado[1]+5)
                     fondo.blit(temp, pos_coordenado)
@@ -209,7 +212,7 @@ trabajando.renderizar()
 # Partida
 partida = Juego('sudoku.txt')
 partida.jugador = ''
-partida.fuente = numeros
+partida.fuente = numeros_sudoku
 partida.color = negro
 partida.modo = 9
 #partida.inicial('sudoku.txt')
@@ -655,7 +658,7 @@ def dibuja_tablero(tablero, color, imagen_fondo, sudoku):
                     (tablero.margen_x, i + tablero.margen_y),
                     (tablero.ancho + tablero.margen_x, i + tablero.margen_y), 3)
 
-    return 
+    return
 
 
 # mousex, mousey = pygame.mouse.get_pos() necesario para que funcione
@@ -731,40 +734,116 @@ def guardar_partida(nombre, numeros_tablero):
 
 # Donde se corre el juego ahora si si si
 def main(tablero):
-    global partida, negro, imagen_fondo, sudoku
+    global partida, negro, imagen_fondo, sudoku, fps
 
     # INICIAL
     # Se limpia la pantalla (queda: fondo blanco, titulo)
-    limpia_pantalla(fondo, imagen_fondo, sudoku)
-    partida.dibuja_numero(tablero)
-    dibuja_tablero(tablero, negro, imagen_fondo, sudoku)
+    actualiza_pantalla_juego(tablero)
     pygame.display.update()
+    # Crea el reloj
+    reloj = pygame.time.Clock()
+    contador = 0
+    reloj_contador = [0, 0]
+
    # Ciclo principal
     while True:
         for evento in pygame.event.get():
             # Variables a verificar
-            mouse = pygame.mouse.get_pos()
-            click = pygame.mouse.get_pressed()
-            mouse_celdas = coord_celdas(mouse, tablero)
             if evento.type == QUIT:
                 cerrar()
-            for i in range(9):
-                for j in range(9):
-                    if mouse_celdas == (i,j) and not('*' in partida.tablero_juego[i][j]):
-                        if click[0] == 1:
-                            print(i,j)
-                            pygame.draw.rect(fondo, azul, (mouse[0], mouse[1], tablero.celda, tablero.celda))
-                            if evento.unicode.isnumeric() and evento.unicode != '0':
-                                tablero_juego[i][j] = evento.unicode
-                            else:
-                                pass
-                            pygame.display.update()
+            if evento.type == MOUSEBUTTONUP:
+                mouse = pygame.mouse.get_pos()
+                mouse_celdas = coord_celdas(mouse, tablero)
+                if mouse_celdas[0] != None:
+                    if len(partida.tablero_juego[mouse_celdas[1]][mouse_celdas[0]]) == 1:
+                        print(mouse_celdas)
+                        mouse = celdas_coord(mouse_celdas, tablero)
+                        # Resalta la celda seleccionada
+                        resaltado = pygame.Surface((tablero.celda, tablero.celda))
+                        resaltado.fill(azul)
+                        resaltado.set_alpha(150)
+                        fondo.blit(resaltado, mouse)
+                        # Resalta la fila y la columna de la celda selecionada
+                        # Filas
+                        pygame.draw.line(fondo, rojo,
+                            (tablero.margen_x + 2, mouse[1]),
+                            (tablero.margen_x + tablero.ancho - 2, mouse[1]), 2)
+                        pygame.draw.line(fondo, rojo,
+                            (tablero.margen_x + 2, mouse[1] + tablero.celda),
+                            (tablero.margen_x + tablero.ancho - 2, mouse[1] + tablero.celda), 2)
+                        # Columnas
+                        pygame.draw.line(fondo, rojo,
+                            (mouse[0], tablero.margen_y + 2),
+                            (mouse[0], tablero.ancho + tablero.margen_y - 2), 2)
+                        pygame.draw.line(fondo, rojo,
+                            (mouse[0] + tablero.celda, tablero.margen_y + 2),
+                            (mouse[0] + tablero.celda, tablero.ancho + tablero.margen_y - 2), 2)
+                        # Actualiza la pantalla
+                        pygame.display.update((tablero.margen_x, tablero.margen_y, tablero.ancho, tablero.ancho))
+                        introduce_numero(tablero, mouse_celdas)
+                else:
+                    print('mamalo mucho')# Quitar
+                    pass
+                    pygame.display.update()
+        contador += reloj.tick() / 1000
+        contador = tiempo_juego(reloj_contador, contador)
         # Se actualiza la pantalla (queda: fondo blanco, titulo)
         # Dibujar numero cambiado
         #partida.dibuja_numero(tablero)
         dibuja_tablero(tablero, negro, imagen_fondo, sudoku)
         pygame.display.update((tablero.margen_x, tablero.margen_y, tablero.ancho, tablero.ancho))
 
+def tiempo_juego(reloj, contador):
+    reloj[1] += contador
+    if reloj[1] > 59:
+        reloj[0] += 1
+        reloj[1] -= 59
+    contador = 0
+    partida.tiempo = reloj
+    return contador
+
+
+
+def introduce_numero(tablero, mouse_celdas):
+    ciclo = True
+    while ciclo:
+        for evento in pygame.event.get():
+            if evento.type == QUIT:
+                cerrar()
+            if evento.type == KEYDOWN:
+                if evento.unicode.isnumeric() and evento.unicode != '0':
+                    if evento.unicode == partida.tablero_solucion[mouse_celdas[1]][mouse_celdas[0]]:
+                        partida.tablero_juego[mouse_celdas[1]][mouse_celdas[0]] = evento.unicode
+                        actualiza_pantalla_juego(tablero)
+                        ciclo = False
+                    else:
+                        print('TE EQUIVOCASTE MENOR!')
+                        actualiza_pantalla_juego(tablero)
+                        ciclo = False
+                if evento.unicode == '\r':
+                    actualiza_pantalla_juego(tablero)
+                    ciclo = False
+                if evento.unicode == '\x08':
+                    partida.tablero_juego[mouse_celdas[1]][mouse_celdas[0]] = '0'
+                    actualiza_pantalla_juego(tablero)
+                    ciclo = False
+        pygame.display.update((tablero.margen_x-5, tablero.margen_y-5, tablero.ancho+10, tablero.ancho+10))
+
+def actualiza_pantalla_juego(tablero):
+    global fondo, imagen_fondo, sudoku, negro
+    # Muestra el fondo, titulo, tablero y numeros del Sudoku
+    limpia_pantalla(fondo, imagen_fondo, sudoku)
+    partida.dibuja_numero(tablero)
+    dibuja_tablero(tablero, negro, imagen_fondo, sudoku)
+    # Muestra el nombre del jugador
+    nombre = numeros.render('Jugador: ' + partida.jugador, True, negro)
+    fondo.blit(nombre, (600, 200))
+    # Muestra el tiempo de la partida
+    tiempo = numeros.render('Tiempo: {0:0>2.0f}:{1:0>2.0f}'.format(partida.tiempo[0], partida.tiempo[1]), True, negro)
+    fondo.blit(tiempo, (600, 230))
+    #Lista de rectangulos a actualizar en pantalla
+    #lista = (nombre + tiempo)
+    pygame.display.update()
 
 
 
@@ -799,25 +878,9 @@ input_texto(nombre, bienvenida)
 partida.jugador = nombre.texto
 menu_juego(fondo, blanco, azul, sudoku)
 # Dibuja el tablero
-while True:
 
     # PROCESAMIENTO DE EVENTOS DEBAJO DE ESTA LINEA
-    for evento in pygame.event.get():
-        # Cierra el programa
-        if evento.type == QUIT:
-            cerrar()
-        # Dibuja el tablero si hay un click"""
-        #if evento.type == MOUSEBUTTONUP:
-            # Reproduce el sonido click
-            #dibuja_tablero(tablero9, negro)
-        # Entrada del nombre del usuario (ARREGLAR DONDE VA LUEGO)"""
-        if evento.type == KEYUP and evento.key != 'backspace':
-            tecla = pygame.key.name(evento.key)
-            nombre += input_texto(tecla, palabras_menu, (0, 0))
-            print(nombre)
-        if evento.type == KEYUP and evento.key == 'backspace':
-            nombre -= nombre[:-1]
-            print(nombre)
+
     # PROCESAMIENTO DE EVENTOS ENCIMA DE ESTA LINEA
 
     # LOGICA DEL JUEGO DEBAJO DE ESTA LINEA
@@ -827,6 +890,5 @@ while True:
     # DIBUJO DE LA NUEVA PANTALLA
 
     # Se actualiza todo lo hecho en el codigo
-    pygame.display.update()
+pygame.display.update()
     # Limitamos los FPS
-    reloj.tick(fps)
