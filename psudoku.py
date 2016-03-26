@@ -2,9 +2,8 @@
 """Un super Sudoku que no funciona."""
 
 # Librerias
-import sys, math
+import sys
 import os.path
-# import time
 import pygame
 from pygame import *
 
@@ -54,11 +53,11 @@ class Juego():
     tablero_juego = [['0'for x in range(9)] for y in range(9)]
     fuente = palabras_menu
     color = negro
-    tiempo = [0,0]
+    tiempo = [0, 0]
     puntaje = 0
     errores = 0
     jugador = ''
-    modo = 0
+    nivel = [0, 0, 0]
     archivo = os.path.join('tableros', '')
     dificultad = ''
 
@@ -95,7 +94,7 @@ class Juego():
         """Crea la matriz a ser utilizada en el juego."""
         for x in range(9):
             for y in range(9):
-                if '*' in self.tablero_solucion[x][y] or '#' in self.tablero_solucion[x][y]:
+                if '*' in self.tablero_solucion[x][y]:
                     self.tablero_juego[x][y] = self.tablero_solucion[x][y]
         return self.tablero_juego
 
@@ -223,8 +222,6 @@ partida = Juego('sudoku.txt')
 partida.jugador = ''
 partida.fuente = numeros_sudoku
 partida.color = negro
-partida.modo = 9
-#partida.inicial('sudoku.txt')
 
 # Tablero 9x9
 tablero9 = Tablero()
@@ -559,7 +556,7 @@ def dibuja_boton(opcion):
 # Dibuja el menú principal
 def menu_juego(fondo, blanco, azul, sudoku):
     """Funcion que muestra el menu en la pantalla."""
-    datos_menu = (fondo,blanco,azul,sudoku)
+    datos_menu = (fondo, blanco, azul, sudoku)
     menu = True
     # Ciclo principal
     while menu:
@@ -593,7 +590,6 @@ def menu_juego(fondo, blanco, azul, sudoku):
             # Reacciona si se pasa por encima de la opcion (FALTAN IMG HOVER)
             if cajas[0].collidepoint(mouse[0], mouse[1]):
                 pygame.draw.rect(fondo, (azul), (nueva_Partida.margen_x, nueva_Partida.margen_y, nueva_Partida.ancho, nueva_Partida.alto))
-                #fondo.blit(opcion.imagen, (opcion.margen_x - 15, opcion.margen_y - 22))
             if cajas[1].collidepoint(mouse[0], mouse[1]):
                 pygame.draw.rect(fondo, azul, (cargar_partida.margen_x, cargar_partida.margen_y, cargar_partida.ancho, cargar_partida.alto))
             if cajas[2].collidepoint(mouse[0], mouse[1]):
@@ -606,10 +602,9 @@ def menu_juego(fondo, blanco, azul, sudoku):
             if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
                 menu = elegir_dificultad(datos_menu)
-                #menu = False
             if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
-                dibuja_tablero(tablero9, negro, imagen_fondo, sudoku)
+                lindo_gatito(gato, imagen_fondo, trabajando)
                 menu = False
             if click[0] == 1 and cajas[2].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
@@ -811,7 +806,6 @@ def main(tablero):
                 if cajas[0].collidepoint(mouse[0], mouse[1]):
                     ayuda_solucion(tablero)
                     actualiza_pantalla_juego(tablero)
-                    print("lol")
                 else:
                     print('mamalo mucho')# Quitar
                     pass
@@ -866,6 +860,7 @@ def actualiza_pantalla_juego(tablero):
     limpia_pantalla(fondo, imagen_fondo, sudoku)
     partida.dibuja_numero(tablero)
     dibuja_tablero(tablero, negro, imagen_fondo, sudoku)
+    dibuja_boton(solucion)
     # Muestra el nombre del jugador
     nombre = numeros.render('Jugador: ' + partida.jugador, True, negro)
     fondo.blit(nombre, (600, 200))
@@ -914,8 +909,12 @@ def lindo_gatito(gato, imagen_fondo, trabajando):
     fondo.blit(imagen_fondo, (0, 0))
     fondo.blit(gato.imagen, (gato.margen_x, gato.margen_y))
     fondo.blit(trabajando.renderizado, (trabajando.margen_x, trabajando.margen_y))
-
     pygame.display.update()
+    while True:
+        for evento in pygame.event.get():
+                if evento.type == QUIT:
+                    cerrar()
+
 ######################################################
 
 
@@ -938,7 +937,6 @@ input_texto(nombre, bienvenida)
 partida.jugador = nombre.texto
 menu_juego(fondo, blanco, azul, sudoku)
 # Dibuja el tablero
-
     # PROCESAMIENTO DE EVENTOS DEBAJO DE ESTA LINEA
 
     # PROCESAMIENTO DE EVENTOS ENCIMA DE ESTA LINEA
