@@ -2,7 +2,7 @@
 """Un super Sudoku que no funciona."""
 
 # Librerias
-import sys
+import sys, math
 import os.path
 # import time
 import pygame
@@ -28,7 +28,7 @@ pygame.init()
 titulos = pygame.font.SysFont("monospace", 60, italic=True)
 palabras_menu = pygame.font.SysFont("monospace", 17)
 numeros_sudoku = pygame.font.SysFont("monospace", 30, bold=True)
-numeros = pygame.font.SysFont("fuentes/numeros.ttf", 25)
+numeros = pygame.font.SysFont("fuentes/numeros.ttf", 30)
 
 # Define la pantalla principal y el titulo de la pantalla
 fondo = pygame.display.set_mode(tamano_fondo)
@@ -207,6 +207,15 @@ trabajando.color = negro
 trabajando.margen_x = 30
 trabajando.margen_y = 500
 trabajando.renderizar()
+
+# Elija las casillas para la solucion
+eleccion_casilla = Texto()
+eleccion_casilla.texto = 'Elija casillas para la solución'
+eleccion_casilla.fuente = titulos
+eleccion_casilla.color = negro
+eleccion_casilla.margen_x = 30
+eleccion_casilla.margen_y = 500
+eleccion_casilla.renderizar()
 # ###################################################
 
 # Partida
@@ -411,9 +420,19 @@ t9x9.margen_y = 150
 t9x9.ruta = os.path.join('imagenes', '9x9.png')
 t9x9.indica_ruta()
 texto = "t9x9"
+#_______________________ FIN  de Botones para elegir tablero _________________
 
-# ____________________ FIN IMAGENES _______________________________________
+#_____________________ Botones para el juego principal ____________________
 
+# Solucion
+solucion = Boton()
+solucion.ancho = 130
+solucion.alto = 30
+solucion.margen_x = 10
+solucion.margen_y = 185
+solucion.ruta = os.path.join('imagenes', 'solucion.png')
+solucion.indica_ruta()
+texto = "Solucion"
 
 # _________________________ Inicio de Funciones ______________________________#
 
@@ -492,13 +511,13 @@ def elegir_dificultad(datos_menu):
         pygame.display.update()
 
 def elegir_tablero(partida):
-    tablero = True
+    tableros = True
     cajas = [
     pygame.Rect(t6x6.margen_x, t6x6.margen_y, t6x6.ancho, t6x6.alto),
     pygame.Rect(t9x9.margen_x, t9x9.margen_y, t9x9.ancho, t9x9.alto),
     ]
 
-    while tablero:
+    while tableros:
 
         # Dibuja los botones del menu
         fondo.blit(imagen_fondo, (0, 0))
@@ -522,11 +541,11 @@ def elegir_tablero(partida):
             if click[0] == 1 and cajas[0].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
                 main(tablero6)
-                tablero = False
+                tableros = False
             if click[0] == 1 and cajas[1].collidepoint(mouse[0], mouse[1]):
                 click_sonido.play()
                 main(tablero9)
-                tablero = False
+                tableros = False
         pygame.display.update()
 
 
@@ -744,18 +763,26 @@ def main(tablero):
     reloj = pygame.time.Clock()
     contador = 0
     reloj_contador = [0, 0]
-
+    # Cajas de opciones del Juego Principal (main)
+    cajas = [
+    pygame.Rect(solucion.margen_x, solucion.margen_y, solucion.ancho, solucion.alto),
+    ]
    # Ciclo principal
     while True:
+
+        mouse = pygame.mouse.get_pos()
+        # Dibuja los botones de las opciones
+        dibuja_boton(solucion)
+
         for evento in pygame.event.get():
             # Variables a verificar
             if evento.type == QUIT:
                 cerrar()
             if evento.type == MOUSEBUTTONUP:
-                mouse = pygame.mouse.get_pos()
                 mouse_celdas = coord_celdas(mouse, tablero)
                 if mouse_celdas[0] != None:
                     if len(partida.tablero_juego[mouse_celdas[1]][mouse_celdas[0]]) == 1:
+                        dibuja_boton(solucion)
                         print(mouse_celdas)
                         mouse = celdas_coord(mouse_celdas, tablero)
                         # Resalta la celda seleccionada
@@ -779,8 +806,12 @@ def main(tablero):
                             (mouse[0] + tablero.celda, tablero.margen_y + 2),
                             (mouse[0] + tablero.celda, tablero.ancho + tablero.margen_y - 2), 2)
                         # Actualiza la pantalla
-                        pygame.display.update((tablero.margen_x, tablero.margen_y, tablero.ancho, tablero.ancho))
+                        pygame.display.update()
                         introduce_numero(tablero, mouse_celdas)
+                if cajas[0].collidepoint(mouse[0], mouse[1]):
+                    ayuda_solucion(tablero)
+                    actualiza_pantalla_juego(tablero)
+                    print("lol")
                 else:
                     print('mamalo mucho')# Quitar
                     pass
@@ -845,6 +876,35 @@ def actualiza_pantalla_juego(tablero):
     #lista = (nombre + tiempo)
     pygame.display.update()
 
+
+def ayuda_solucion(tablero):
+    ayuda = True
+    pistas = []
+    while ayuda:
+        mouse = pygame.mouse.get_pos()
+        for evento in pygame.event.get():
+                # Variables a verificar
+                if evento.type == QUIT:
+                    cerrar()
+                if evento.type == MOUSEBUTTONUP:
+                    mouse_celdas = coord_celdas(mouse, tablero)
+                    if mouse_celdas[0] != None:
+                        if len(partida.tablero_juego[mouse_celdas[1]][mouse_celdas[0]]) == 1:
+                            dibuja_boton(solucion)
+                            print(mouse_celdas)
+                            mouse = celdas_coord(mouse_celdas, tablero)
+                            # Resalta la celda seleccionada
+                            resaltado = pygame.Surface((tablero.celda, tablero.celda))
+                            resaltado.fill(azul)
+                            resaltado.set_alpha(150)
+                            fondo.blit(resaltado, mouse)
+                            pistas.append([mouse_celdas[1],mouse_celdas[0]])
+                            pygame.display.update(mouse,(40,40))
+                if evento.type == KEYDOWN:
+                    if evento.key == K_RETURN:
+                        for i in range(len(pistas)):
+                            partida.tablero_juego[pistas[i][0]][pistas[i][1]] = partida.tablero_solucion[pistas[i][0]][pistas[i][1]]
+                            ayuda = False
 
 
 
